@@ -4,11 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <!-- Native App Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#f4f4f4">
-    <title>Record App</title>
+    <title>Transaction Record</title>
     <style>
         body {
             font-family: sans-serif;
@@ -35,13 +34,20 @@
             font-size: 14px;
         }
 
+        /* Fixed Input styling for iOS */
         input {
             width: 100%;
             padding: 10px;
             box-sizing: border-box;
+            /* Fixes width overflow */
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 16px;
+            background-color: white;
+            /* Removes iOS gray background */
+            -webkit-appearance: none;
+            /* Removes iOS default rendering */
+            appearance: none;
         }
 
         #sigPad {
@@ -51,6 +57,7 @@
             width: 100%;
             height: 150px;
             border-radius: 4px;
+            box-sizing: border-box;
         }
 
         .btn {
@@ -74,12 +81,18 @@
             box-sizing: border-box;
         }
 
+        /* Fixed Clear Button */
         .btn-clear {
             background: #dc3545;
-            padding: 4px 8px;
+            color: white;
+            padding: 5px 10px;
             font-size: 12px;
+            border: none;
+            border-radius: 4px;
             float: right;
-            margin-top: -25px;
+            margin-top: -28px;
+            /* Aligns perfectly with the label */
+            cursor: pointer;
         }
 
         #resultContainer {
@@ -112,19 +125,20 @@
         <div class="row">
             <div style="flex:1;">
                 <label>Worldwide Work ($)</label>
-                <input type="tel" id="wwInput" step="0.01" placeholder="Leave blank for $0.00">
+                <input type="tel" id="wwInput" placeholder="Leave blank for 0">
             </div>
             <div style="flex:1;">
                 <label>Local Cong. ($)</label>
-                <input type="tel" id="localInput" step="0.01" placeholder="Leave blank for $0.00">
+                <input type="tel" id="localInput" placeholder="Leave blank for 0">
             </div>
         </div>
 
         <label>Note (Optional)</label>
         <input type="text" id="noteInput" placeholder="e.g., Zoom Meeting">
 
+        <!-- Removed the general .btn class from the clear button to fix width issue -->
         <label>Signature</label>
-        <button class="btn btn-clear" onclick="clearSig()">Clear</button>
+        <button class="btn-clear" onclick="clearSig()">Clear</button>
         <canvas id="sigPad"></canvas>
 
         <button class="btn" onclick="generateImage()" id="genBtn">Generate Record</button>
@@ -135,7 +149,6 @@
         <p style="font-size:12px; color:#555;">Long-press image to save, or use button.</p>
         <img id="finalImage" src="" />
         <a id="downloadBtn" class="btn btn-dl" href="">Download Image</a>
-        <!-- Instant Reset instead of page reload -->
         <button class="btn" style="background:#6c757d;" onclick="resetForm()">Create Another</button>
     </div>
 
@@ -145,6 +158,7 @@
         const canvas = document.getElementById('sigPad');
         const ctx = canvas.getContext('2d');
         let drawing = false;
+        let hasSignature = false; // Tracks if the pad has been touched
 
         function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
         window.onload = resizeCanvas;
@@ -156,15 +170,32 @@
             return { x: clientX - rect.left, y: clientY - rect.top };
         }
 
-        const startDraw = (e) => { e.preventDefault(); drawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); };
+        const startDraw = (e) => {
+            e.preventDefault();
+            drawing = true;
+            hasSignature = true; // Marks the pad as signed
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        };
         const draw = (e) => { if (!drawing) return; e.preventDefault(); const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); };
         const stopDraw = (e) => { e.preventDefault(); drawing = false; };
-        function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+        function clearSig() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hasSignature = false; // Resets the requirement if they clear it
+        }
 
         canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDraw);
         canvas.addEventListener('touchstart', startDraw); canvas.addEventListener('touchmove', draw); canvas.addEventListener('touchend', stopDraw);
 
         function generateImage() {
+            // STOP IF NO SIGNATURE
+            if (!hasSignature) {
+                alert("Please provide a signature before generating the record.");
+                return;
+            }
+
             document.getElementById('genBtn').innerText = "Generating...";
 
             const bgImg = new Image();
@@ -203,15 +234,14 @@
                 document.getElementById('formContainer').style.display = 'none';
                 document.getElementById('resultContainer').style.display = 'block';
             };
-            bgImg.src = 'template.png'; // Points directly to your image file
+            bgImg.src = 'template.png';
         }
 
-        // Instant reset instead of laggy page reload
         function resetForm() {
             document.getElementById('wwInput').value = '';
             document.getElementById('localInput').value = '';
             document.getElementById('noteInput').value = '';
-            clearSig();
+            clearSig(); // This also automatically resets hasSignature to false
             document.getElementById('genBtn').innerText = "Generate Record";
             document.getElementById('resultContainer').style.display = 'none';
             document.getElementById('formContainer').style.display = 'block';
