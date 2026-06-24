@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!-- Native App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#f4f4f4">
+    <title>Record App</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 15px;
+            max-width: 500px;
+            margin: auto;
+            background: #f4f4f4;
+            touch-action: manipulation;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        #sigPad {
+            border: 2px dashed #999;
+            background: #fafafa;
+            touch-action: none;
+            width: 100%;
+            height: 150px;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        .btn-dl {
+            background: #28a745;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            box-sizing: border-box;
+        }
+
+        .btn-clear {
+            background: #dc3545;
+            padding: 4px 8px;
+            font-size: 12px;
+            float: right;
+            margin-top: -25px;
+        }
+
+        #resultContainer {
+            display: none;
+            text-align: center;
+        }
+
+        #finalImage {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            margin-bottom: 15px;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card" id="formContainer">
+        <h2 style="margin-top:0;">Fill Record</h2>
+
+        <label>Date</label>
+        <input type="date" id="dateInput">
+
+        <div class="row">
+            <div style="flex:1;">
+                <label>Worldwide Work ($)</label>
+                <input type="number" id="wwInput" step="0.01" placeholder="Leave blank for $0.00">
+            </div>
+            <div style="flex:1;">
+                <label>Local Cong. ($)</label>
+                <input type="number" id="localInput" step="0.01" placeholder="Leave blank for $0.00">
+            </div>
+        </div>
+
+        <label>Note (Optional)</label>
+        <input type="text" id="noteInput" placeholder="e.g., Zoom Meeting">
+
+        <label>Signature</label>
+        <button class="btn btn-clear" onclick="clearSig()">Clear</button>
+        <canvas id="sigPad"></canvas>
+
+        <button class="btn" onclick="generateImage()" id="genBtn">Generate Record</button>
+    </div>
+
+    <div class="card" id="resultContainer">
+        <h3 style="margin-top:0; color:green;">Success!</h3>
+        <p style="font-size:12px; color:#555;">Long-press image to save, or use button.</p>
+        <img id="finalImage" src="" />
+        <a id="downloadBtn" class="btn btn-dl" href="">Download Image</a>
+        <!-- Instant Reset instead of page reload -->
+        <button class="btn" style="background:#6c757d;" onclick="resetForm()">Create Another</button>
+    </div>
+
+    <script>
+        document.getElementById('dateInput').valueAsDate = new Date();
+
+        const canvas = document.getElementById('sigPad');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+
+        function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+        window.onload = resizeCanvas;
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        const startDraw = (e) => { e.preventDefault(); drawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); };
+        const draw = (e) => { if (!drawing) return; e.preventDefault(); const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); };
+        const stopDraw = (e) => { e.preventDefault(); drawing = false; };
+        function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+        canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDraw);
+        canvas.addEventListener('touchstart', startDraw); canvas.addEventListener('touchmove', draw); canvas.addEventListener('touchend', stopDraw);
+
+        function generateImage() {
+            document.getElementById('genBtn').innerText = "Generating...";
+
+            const bgImg = new Image();
+            bgImg.onload = function () {
+                const outCanvas = document.createElement('canvas');
+                outCanvas.width = bgImg.width; outCanvas.height = bgImg.height;
+                const oCtx = outCanvas.getContext('2d');
+
+                oCtx.drawImage(bgImg, 0, 0);
+                oCtx.font = "26px Arial"; oCtx.fillStyle = "black";
+
+                const dateVal = document.getElementById('dateInput').value;
+                const dParts = dateVal.split('-');
+                const formattedDate = `${dParts[1]}/${dParts[2]}/${dParts[0].slice(-2)}`;
+                const dynamicFileName = `s24_${dParts[1]}${dParts[2]}.png`;
+
+                const ww = parseFloat(document.getElementById('wwInput').value) || 0;
+                const local = parseFloat(document.getElementById('localInput').value) || 0;
+                const total = ww + local;
+
+                oCtx.fillText(formattedDate, outCanvas.width * 0.76, outCanvas.height * 0.185);
+                oCtx.fillText('$' + ww.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.385);
+                oCtx.fillText('$' + local.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.45);
+                oCtx.fillText('$' + total.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.69);
+
+                oCtx.font = "22px Arial";
+                oCtx.fillText(document.getElementById('noteInput').value, outCanvas.width * 0.22, outCanvas.height * 0.925);
+                oCtx.drawImage(canvas, outCanvas.width * 0.13, outCanvas.height * 0.68, outCanvas.width * 0.25, outCanvas.height * 0.1);
+
+                const finalData = outCanvas.toDataURL("image/png");
+                document.getElementById('finalImage').src = finalData;
+
+                const dlBtn = document.getElementById('downloadBtn');
+                dlBtn.href = finalData; dlBtn.download = dynamicFileName;
+
+                document.getElementById('formContainer').style.display = 'none';
+                document.getElementById('resultContainer').style.display = 'block';
+            };
+            bgImg.src = 'template.png'; // Points directly to your image file
+        }
+
+        // Instant reset instead of laggy page reload
+        function resetForm() {
+            document.getElementById('wwInput').value = '';
+            document.getElementById('localInput').value = '';
+            document.getElementById('noteInput').value = '';
+            clearSig();
+            document.getElementById('genBtn').innerText = "Generate Record";
+            document.getElementById('resultContainer').style.display = 'none';
+            document.getElementById('formContainer').style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>
