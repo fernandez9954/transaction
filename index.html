@@ -6,190 +6,346 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#f4f4f4">
-    <title>Transaction Record</title>
+    <meta name="theme-color" content="#f7f9fb">
+    <title>Transaction S-24</title>
+
+    <!-- Clean, Native-App Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
     <style>
+        /* Reset & Base Styles */
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            padding: 15px;
-            max-width: 500px;
-            margin: auto;
-            background: #f4f4f4;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f9fb;
+            color: #191c1e;
             touch-action: manipulation;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-
-        /* Fixed Input styling for iOS */
-        input {
-            width: 100%;
-            padding: 10px;
+        * {
             box-sizing: border-box;
-            /* Fixes width overflow */
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-            background-color: white;
-            /* Removes iOS gray background */
+        }
+
+        /* Top Header */
+        header {
+            padding: 24px 20px;
+            background-color: #f7f9fb;
+        }
+
+        header h1 {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 36px;
+            line-height: 40px;
+            font-weight: 700;
+            color: #0058bc;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 0 20px 40px 20px;
+        }
+
+        /* List-Based Form Rows */
+        .row {
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            border-bottom: 1px solid #e0e3e5;
+            gap: 12px;
+        }
+
+        .row-horizontal {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #e0e3e5;
+        }
+
+        /* Labels */
+        label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #414755;
+        }
+
+        /* Inputs */
+        input[type="date"],
+        input[type="text"] {
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            font-size: 18px;
+            color: #191c1e;
+            background: transparent;
+            border: none;
+            padding: 0;
+            outline: none;
             -webkit-appearance: none;
-            /* Removes iOS default rendering */
             appearance: none;
         }
 
-        #sigPad {
-            border: 2px dashed #999;
-            background: #fafafa;
-            touch-action: none;
-            width: 100%;
-            height: 150px;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .btn {
-            background: #007bff;
-            color: white;
+        input[type="text"] {
+            background: #ffffff;
+            border: 1px solid #e0e3e5;
+            border-radius: 8px;
             padding: 12px;
+            margin-top: 4px;
+        }
+
+        input[type="date"] {
+            text-align: right;
+        }
+
+        /* Huge Money Inputs */
+        .money-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .money-group span {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #191c1e;
+        }
+
+        .money-group input {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #191c1e;
+            background: transparent;
+            border: none;
+            padding: 0;
+            outline: none;
             width: 100%;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: bold;
-            margin-top: 20px;
-            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
         }
 
-        .btn-dl {
-            background: #28a745;
-            text-align: center;
-            text-decoration: none;
-            display: block;
-            box-sizing: border-box;
+        .money-group input::placeholder {
+            color: #c1c6d7;
+            font-weight: 600;
         }
 
-        /* Fixed Clear Button */
+        /* Signature Area */
+        .sig-container {
+            display: flex;
+            flex-direction: column;
+            padding: 24px 0;
+        }
+
+        .sig-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
         .btn-clear {
-            background: #dc3545;
-            color: white;
-            padding: 5px 10px;
-            font-size: 12px;
+            color: #0058bc;
+            background: transparent;
             border: none;
-            border-radius: 4px;
-            float: right;
-            margin-top: -28px;
-            /* Aligns perfectly with the label */
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            height: 140px;
+            background: #ffffff;
+            border: 1px dashed #717786;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .canvas-placeholder {
+            position: absolute;
+            color: #717786;
+            font-size: 14px;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        /* Action Buttons */
+        .btn-submit {
+            width: 100%;
+            background: #0058bc;
+            color: #ffffff;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            margin-top: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.2s;
+        }
+
+        .btn-submit:active {
+            opacity: 0.8;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            background: #e0e3e5;
+            color: #191c1e;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            margin-top: 12px;
             cursor: pointer;
         }
 
+        /* Success Screen */
         #resultContainer {
             display: none;
             text-align: center;
+            padding-top: 20px;
+        }
+
+        .success-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .success-title {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 28px;
+            color: #0058bc;
+            margin: 0 0 16px 0;
+            font-weight: 700;
+        }
+
+        #summaryText {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #191c1e;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+            line-height: 1.5;
+            border: 1px solid #e0e3e5;
+        }
+
+        .instruction-box {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 24px;
+            line-height: 1.4;
+            text-align: left;
         }
 
         #finalImage {
             width: 100%;
             height: auto;
-            border: 1px solid #ccc;
-            margin-bottom: 15px;
-        }
-
-        .row {
-            display: flex;
-            gap: 10px;
-        }
-
-        /* Input Group for Dollar Sign */
-        .input-group {
-            display: flex;
-            width: 100%;
-        }
-
-        .input-group-addon {
-            background: #f4f4f4;
-            border: 1px solid #ccc;
-            border-right: none;
-            padding: 10px 15px;
-            border-radius: 4px 0 0 4px;
-            font-size: 16px;
-            color: #333;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-group input {
-            border-radius: 0 4px 4px 0;
-        }
-
-        /* Instruction Banner */
-        .instruction-box {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-            padding: 15px;
-            border-radius: 6px;
-            font-size: 15px;
-            margin-bottom: 15px;
-            line-height: 1.4;
-            text-align: left;
+            border: 1px solid #e0e3e5;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>
 
 <body>
 
-    <div class="card" id="formContainer">
-        <h2 style="margin-top:0;">Transaction Record S-24-E</h2>
+    <div id="formContainer">
+        <header>
+            <h1>Transaction S24</h1>
+        </header>
 
-        <label>Date</label>
-        <input type="date" id="dateInput">
+        <div class="container">
 
-        <div class="row">
-            <div style="flex:1;">
+            <!-- Date Row -->
+            <div class="row-horizontal">
+                <label>Date</label>
+                <div style="width: 60%;">
+                    <input type="date" id="dateInput">
+                </div>
+            </div>
+
+            <!-- Worldwide Work Row -->
+            <div class="row">
                 <label>Worldwide Work</label>
-                <div class="input-group">
-                    <span class="input-group-addon">$</span>
-                    <input type="tel" id="wwInput" placeholder="Blank for 0">
+                <div class="money-group">
+                    <span>$</span>
+                    <input type="tel" id="wwInput" placeholder="0">
                 </div>
             </div>
-            <div style="flex:1;">
-                <label>Local Expenses</label>
-                <div class="input-group">
-                    <span class="input-group-addon">$</span>
-                    <input type="tel" id="localInput" placeholder="Blank for 0">
+
+            <!-- Local Congregation Row -->
+            <div class="row">
+                <label>Local Congregation</label>
+                <div class="money-group">
+                    <span>$</span>
+                    <input type="tel" id="localInput" placeholder="0">
                 </div>
             </div>
+
+            <!-- Notes Row -->
+            <div class="row" style="border-bottom: none; padding-bottom: 0;">
+                <label>Notes (Optional)</label>
+                <input type="text" id="noteInput" placeholder="e.g., Zoom Meeting">
+            </div>
+
+            <!-- Signature Area -->
+            <div class="sig-container">
+                <div class="sig-header">
+                    <label>Digital Signature</label>
+                    <button class="btn-clear" onclick="clearSig()">Clear Signature</button>
+                </div>
+                <div class="canvas-wrapper">
+                    <span class="canvas-placeholder" id="sigPlaceholder">Draw your signature here</span>
+                    <canvas id="sigPad"></canvas>
+                </div>
+            </div>
+
+            <button class="btn-submit" onclick="generateImage()" id="genBtn">Generate Record</button>
         </div>
-
-        <label>Note (Optional)</label>
-        <input type="text" id="noteInput" placeholder="e.g., Zoom Meeting">
-
-        <!-- Removed the general .btn class from the clear button to fix width issue -->
-        <label>Signature</label>
-        <button class="btn-clear" onclick="clearSig()">Clear</button>
-        <canvas id="sigPad"></canvas>
-
-        <button class="btn" onclick="generateImage()" id="genBtn">Generate Record</button>
     </div>
 
-    <div class="card" id="resultContainer">
-        <h3 style="margin-top:0; color:green; margin-bottom: 5px;">Success!</h3>
+    <!-- Success Screen -->
+    <div class="container" id="resultContainer">
+        <div class="success-icon">✅</div>
+        <h3 class="success-title">Success!</h3>
 
-        <!-- New Dynamic Summary Line -->
-        <div id="summaryText" style="font-size: 15px; font-weight: bold; margin-bottom: 15px; color: #333;"></div>
+        <div id="summaryText"></div>
 
         <div class="instruction-box">
             <strong>👇 ALMOST DONE!</strong><br><br>
@@ -198,19 +354,27 @@
 
         <img id="finalImage" src="" />
 
-        <button class="btn" style="background:#6c757d;" onclick="resetForm()">Create Another</button>
+        <button class="btn-secondary" onclick="resetForm()">Create Another Form</button>
     </div>
 
     <script>
+        // 1. Initialize Date
         document.getElementById('dateInput').valueAsDate = new Date();
 
+        // 2. Setup Signature Pad & Variables
         const canvas = document.getElementById('sigPad');
         const ctx = canvas.getContext('2d');
+        const placeholder = document.getElementById('sigPlaceholder');
         let drawing = false;
-        let hasSignature = false; // Tracks if the pad has been touched
+        let hasSignature = false;
 
-        function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+        // Resize canvas perfectly to wrapper
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
         window.onload = resizeCanvas;
+        window.onresize = resizeCanvas;
 
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
@@ -222,24 +386,41 @@
         const startDraw = (e) => {
             e.preventDefault();
             drawing = true;
-            hasSignature = true; // Marks the pad as signed
+            hasSignature = true;
+            placeholder.style.display = 'none'; // Hide placeholder text
             const pos = getPos(e);
+
+            // Update styling to match the modern look
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#0058bc'; // Native blue ink
+
             ctx.beginPath();
             ctx.moveTo(pos.x, pos.y);
         };
-        const draw = (e) => { if (!drawing) return; e.preventDefault(); const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); };
-        const stopDraw = (e) => { e.preventDefault(); drawing = false; };
+        const draw = (e) => {
+            if (!drawing) return;
+            e.preventDefault();
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        };
+        const stopDraw = (e) => {
+            e.preventDefault();
+            drawing = false;
+        };
 
         function clearSig() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            hasSignature = false; // Resets the requirement if they clear it
+            hasSignature = false;
+            placeholder.style.display = 'block'; // Bring placeholder back
         }
 
-        canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDraw);
-        canvas.addEventListener('touchstart', startDraw); canvas.addEventListener('touchmove', draw); canvas.addEventListener('touchend', stopDraw);
+        canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDraw); canvas.addEventListener('mouseout', stopDraw);
+        canvas.addEventListener('touchstart', startDraw, { passive: false }); canvas.addEventListener('touchmove', draw, { passive: false }); canvas.addEventListener('touchend', stopDraw);
 
+        // 3. Engine Core: Generate Final Image
         function generateImage() {
-            // STOP IF NO SIGNATURE
             if (!hasSignature) {
                 alert("Please provide a signature before generating the record.");
                 return;
@@ -259,14 +440,10 @@
                 const dateVal = document.getElementById('dateInput').value;
                 const dParts = dateVal.split('-');
                 const formattedDate = `${dParts[1]}/${dParts[2]}/${dParts[0].slice(-2)}`;
-                const dynamicFileName = `s24_${dParts[1]}${dParts[2]}.png`;
 
                 const ww = parseFloat(document.getElementById('wwInput').value) || 0;
                 const local = parseFloat(document.getElementById('localInput').value) || 0;
                 const total = ww + local;
-
-                // Create the summary text
-                document.getElementById('summaryText').innerHTML = `✅ Total Calculated: $${total.toFixed(2)}<br><span style="font-weight: normal; font-size: 14px;">(WW: $${ww.toFixed(2)} | Local: $${local.toFixed(2)})</span>`;
 
                 oCtx.fillText(formattedDate, outCanvas.width * 0.76, outCanvas.height * 0.185);
                 oCtx.fillText('$' + ww.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.385);
@@ -275,8 +452,14 @@
 
                 oCtx.font = "22px Arial";
                 oCtx.fillText(document.getElementById('noteInput').value, outCanvas.width * 0.22, outCanvas.height * 0.925);
+
+                // Stamping signature onto form (keep original coordinates)
                 oCtx.drawImage(canvas, outCanvas.width * 0.13, outCanvas.height * 0.68, outCanvas.width * 0.25, outCanvas.height * 0.1);
 
+                // Populate dynamic summary box
+                document.getElementById('summaryText').innerHTML = `Total Calculated: $${total.toFixed(2)}<br><span style="font-weight: 500; font-size: 14px; color: #414755;">(WW: $${ww.toFixed(2)} | Local: $${local.toFixed(2)})</span>`;
+
+                // Output logic
                 const finalData = outCanvas.toDataURL("image/png");
                 document.getElementById('finalImage').src = finalData;
 
@@ -286,38 +469,16 @@
             bgImg.src = 'template.png';
         }
 
+        // 4. Reset flow
         function resetForm() {
             document.getElementById('wwInput').value = '';
             document.getElementById('localInput').value = '';
             document.getElementById('noteInput').value = '';
-            clearSig(); // This also automatically resets hasSignature to false
+            clearSig();
             document.getElementById('genBtn').innerText = "Generate Record";
             document.getElementById('resultContainer').style.display = 'none';
             document.getElementById('formContainer').style.display = 'block';
-        }
-
-        async function shareImage() {
-            const imgElement = document.getElementById('finalImage');
-
-            // Convert the image source into a file object
-            const response = await fetch(imgElement.src);
-            const blob = await response.blob();
-            const file = new File([blob], "Transaction_Record.png", { type: "image/png" });
-
-            // Check if the phone supports the native share menu
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Transaction Record',
-                    });
-                } catch (error) {
-                    console.log('Sharing canceled', error);
-                }
-            } else {
-                // Fallback for very old phones
-                alert("Your phone doesn't support the share menu. Please long-press the image to save it to your Photos.");
-            }
+            window.scrollTo(0, 0); // scroll back to top seamlessly
         }
     </script>
 </body>
