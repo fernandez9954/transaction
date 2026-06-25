@@ -166,7 +166,7 @@
                 </div>
             </div>
             <div style="flex:1;">
-                <label>Local Cong.</label>
+                <label>Local Congregation Expenses</label>
                 <div class="input-group">
                     <span class="input-group-addon">$</span>
                     <input type="tel" id="localInput" placeholder="Blank for 0">
@@ -186,7 +186,10 @@
     </div>
 
     <div class="card" id="resultContainer">
-        <h3 style="margin-top:0; color:green;">Success!</h3>
+        <h3 style="margin-top:0; color:green; margin-bottom: 5px;">Success!</h3>
+
+        <!-- New Dynamic Summary Line -->
+        <div id="summaryText" style="font-size: 15px; font-weight: bold; margin-bottom: 15px; color: #333;"></div>
 
         <div class="instruction-box">
             <strong>👇 ALMOST DONE!</strong><br><br>
@@ -261,6 +264,9 @@
                 const ww = parseFloat(document.getElementById('wwInput').value) || 0;
                 const local = parseFloat(document.getElementById('localInput').value) || 0;
                 const total = ww + local;
+
+                // Create the summary text
+                document.getElementById('summaryText').innerText = `✅ Total Calculated: $${total.toFixed(2)} (WW: $${ww.toFixed(2)} | Local: $${local.toFixed(2)})`;
 
                 oCtx.fillText(formattedDate, outCanvas.width * 0.76, outCanvas.height * 0.185);
                 oCtx.fillText('$' + ww.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.385);
