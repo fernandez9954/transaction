@@ -266,7 +266,7 @@
                 const total = ww + local;
 
                 // Create the summary text
-                document.getElementById('summaryText').innerText = `✅ Total Calculated: $${total.toFixed(2)} (WW: $${ww.toFixed(2)} | Local: $${local.toFixed(2)})`;
+                document.getElementById('summaryText').innerHTML = `✅ Total Calculated: $${total.toFixed(2)}<br><span style="font-weight: normal; font-size: 14px;">(WW: $${ww.toFixed(2)} | Local: $${local.toFixed(2)})</span>`;
 
                 oCtx.fillText(formattedDate, outCanvas.width * 0.76, outCanvas.height * 0.185);
                 oCtx.fillText('$' + ww.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.385);
