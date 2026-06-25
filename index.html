@@ -111,6 +111,41 @@
             display: flex;
             gap: 10px;
         }
+
+        /* Input Group for Dollar Sign */
+        .input-group {
+            display: flex;
+            width: 100%;
+        }
+
+        .input-group-addon {
+            background: #f4f4f4;
+            border: 1px solid #ccc;
+            border-right: none;
+            padding: 10px 15px;
+            border-radius: 4px 0 0 4px;
+            font-size: 16px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group input {
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Instruction Banner */
+        .instruction-box {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 15px;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            text-align: left;
+        }
     </style>
 </head>
 
@@ -124,12 +159,18 @@
 
         <div class="row">
             <div style="flex:1;">
-                <label>Worldwide Work ($)</label>
-                <input type="tel" id="wwInput" placeholder="Leave blank for 0">
+                <label>Worldwide Work</label>
+                <div class="input-group">
+                    <span class="input-group-addon">$</span>
+                    <input type="tel" id="wwInput" placeholder="Blank for 0">
+                </div>
             </div>
             <div style="flex:1;">
-                <label>Local Cong. ($)</label>
-                <input type="tel" id="localInput" placeholder="Leave blank for 0">
+                <label>Local Cong.</label>
+                <div class="input-group">
+                    <span class="input-group-addon">$</span>
+                    <input type="tel" id="localInput" placeholder="Blank for 0">
+                </div>
             </div>
         </div>
 
@@ -146,9 +187,14 @@
 
     <div class="card" id="resultContainer">
         <h3 style="margin-top:0; color:green;">Success!</h3>
-        <p style="font-size:12px; color:#555;">Long-press image to save, or use button.</p>
+
+        <div class="instruction-box">
+            <strong>👇 ALMOST DONE!</strong><br><br>
+            Press and hold your finger directly on the image below, then tap <strong>"Save to Photos"</strong>.
+        </div>
+
         <img id="finalImage" src="" />
-        <button id="shareBtn" class="btn btn-dl" onclick="shareImage()">Save or Share Image</button>
+
         <button class="btn" style="background:#6c757d;" onclick="resetForm()">Create Another</button>
     </div>
 
