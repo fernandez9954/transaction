@@ -216,75 +216,154 @@
 
         .btn-secondary {
             width: 100%;
-            background: #e0e3e5;
-            color: #191c1e;
-            padding: 16px;
-            border-radius: 8px;
-            font-size: 16px;
+            background: transparent;
+            color: #0058bc;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 18px;
             font-weight: 600;
-            border: none;
-            margin-top: 12px;
+            border: 1px solid #717786;
+            margin-top: 24px;
             cursor: pointer;
+            transition: background 0.15s;
         }
 
-        /* Success Screen */
+        .btn-secondary:active {
+            background: #eceef0;
+        }
+
+        /* Success Screen Elegant Layout */
         #resultContainer {
             display: none;
             text-align: center;
-            padding-top: 20px;
+            padding-top: 24px;
         }
 
-        .success-icon {
-            font-size: 48px;
-            margin-bottom: 10px;
+        .success-icon-circle {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #d3e4fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px auto;
+        }
+
+        .success-icon-circle svg {
+            width: 32px;
+            height: 32px;
+            fill: #0058bc;
         }
 
         .success-title {
             font-family: 'Hanken Grotesk', sans-serif;
-            font-size: 28px;
+            font-size: 32px;
             color: #0058bc;
-            margin: 0 0 16px 0;
+            margin: 0 0 24px 0;
             font-weight: 700;
+            letter-spacing: -0.01em;
         }
 
-        #summaryText {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 16px;
-            font-weight: 600;
-            color: #191c1e;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            margin-bottom: 24px;
-            line-height: 1.5;
+        /* Glassmorphism Summary Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
             border: 1px solid #e0e3e5;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
         }
 
+        .card-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #717786;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .card-total {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #0058bc;
+            margin: 0;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #eceef0;
+            border: 1px solid #c1c6d7;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #414755;
+            margin-top: 12px;
+        }
+
+        .badge-divider {
+            width: 1px;
+            height: 12px;
+            background: #c1c6d7;
+        }
+
+        /* Info Banner */
         .instruction-box {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
+            background: rgba(0, 88, 188, 0.08);
+            border-left: 4px solid #0058bc;
             padding: 16px;
-            border-radius: 8px;
-            font-size: 15px;
-            margin-bottom: 24px;
-            line-height: 1.4;
+            border-radius: 0 12px 12px 0;
+            font-size: 14px;
+            line-height: 1.5;
             text-align: left;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            color: #414755;
+        }
+
+        .instruction-box svg {
+            width: 20px;
+            height: 20px;
+            fill: #0058bc;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .instruction-box strong {
+            color: #191c1e;
+        }
+
+        /* Receipt container styling */
+        .receipt-container {
+            width: 100%;
+            height: auto;
+            border: 1px solid #e0e3e5;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
         }
 
         #finalImage {
             width: 100%;
             height: auto;
-            border: 1px solid #e0e3e5;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: block;
         }
     </style>
 </head>
 
 <body>
 
+    <!-- Form Screen -->
     <div id="formContainer">
         <header>
             <h1>Transaction S24</h1>
@@ -342,19 +421,43 @@
 
     <!-- Success Screen -->
     <div class="container" id="resultContainer">
-        <div class="success-icon">✅</div>
-        <h3 class="success-title">Success!</h3>
-
-        <div id="summaryText"></div>
-
-        <div class="instruction-box">
-            <strong>👇 ALMOST DONE!</strong><br><br>
-            Press and hold your finger directly on the image below, then tap <strong>"Save to Photos"</strong>.
+        <!-- Blue Download/Save SVG Icon -->
+        <div class="success-icon-circle">
+            <svg viewBox="0 0 24 24">
+                <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z" />
+            </svg>
         </div>
 
-        <img id="finalImage" src="" />
+        <h3 class="success-title">Ready to Save</h3>
 
-        <button class="btn-secondary" onclick="resetForm()">Create Another Form</button>
+        <!-- Elegant Glassmorphism Card -->
+        <div class="glass-card">
+            <span class="card-label">Total Calculated</span>
+            <div class="card-total" id="summaryTotal">$0.00</div>
+            <div class="badge">
+                <span id="summaryWW">WW: $0.00</span>
+                <div class="badge-divider"></div>
+                <span id="summaryLocal">Local: $0.00</span>
+            </div>
+        </div>
+
+        <!-- Blue Info Banner -->
+        <div class="instruction-box">
+            <!-- Info SVG Icon -->
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+            </svg>
+            <div>
+                <strong>Download instructions:</strong> Press and hold your finger directly on the image below, then tap <strong>"Save to Photos"</strong>.
+            </div>
+        </div>
+
+        <!-- Image with clean shadow border -->
+        <div class="receipt-container">
+            <img id="finalImage" src="" />
+        </div>
+
+        <button class="btn-secondary" onclick="resetForm()">Create Another</button>
     </div>
 
     <script>
@@ -368,7 +471,6 @@
         let drawing = false;
         let hasSignature = false;
 
-        // Resize canvas perfectly to wrapper
         function resizeCanvas() {
             canvas.width = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
@@ -387,13 +489,12 @@
             e.preventDefault();
             drawing = true;
             hasSignature = true;
-            placeholder.style.display = 'none'; // Hide placeholder text
+            placeholder.style.display = 'none';
             const pos = getPos(e);
 
-            // Update styling to match the modern look
             ctx.lineWidth = 2.5;
             ctx.lineCap = 'round';
-            ctx.strokeStyle = '#0058bc'; // Native blue ink
+            ctx.strokeStyle = '#0058bc';
 
             ctx.beginPath();
             ctx.moveTo(pos.x, pos.y);
@@ -413,7 +514,7 @@
         function clearSig() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             hasSignature = false;
-            placeholder.style.display = 'block'; // Bring placeholder back
+            placeholder.style.display = 'block';
         }
 
         canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDraw); canvas.addEventListener('mouseout', stopDraw);
@@ -453,11 +554,12 @@
                 oCtx.font = "22px Arial";
                 oCtx.fillText(document.getElementById('noteInput').value, outCanvas.width * 0.22, outCanvas.height * 0.925);
 
-                // Stamping signature onto form (keep original coordinates)
                 oCtx.drawImage(canvas, outCanvas.width * 0.13, outCanvas.height * 0.68, outCanvas.width * 0.25, outCanvas.height * 0.1);
 
-                // Populate dynamic summary box
-                document.getElementById('summaryText').innerHTML = `Total Calculated: $${total.toFixed(2)}<br><span style="font-weight: 500; font-size: 14px; color: #414755;">(WW: $${ww.toFixed(2)} | Local: $${local.toFixed(2)})</span>`;
+                // Update the elegant summary card
+                document.getElementById('summaryTotal').innerText = `$${total.toFixed(2)}`;
+                document.getElementById('summaryWW').innerText = `WW: $${ww.toFixed(2)}`;
+                document.getElementById('summaryLocal').innerText = `Local: $${local.toFixed(2)}`;
 
                 // Output logic
                 const finalData = outCanvas.toDataURL("image/png");
@@ -478,7 +580,7 @@
             document.getElementById('genBtn').innerText = "Generate Record";
             document.getElementById('resultContainer').style.display = 'none';
             document.getElementById('formContainer').style.display = 'block';
-            window.scrollTo(0, 0); // scroll back to top seamlessly
+            window.scrollTo(0, 0);
         }
     </script>
 </body>
