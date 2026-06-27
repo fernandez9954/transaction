@@ -9,6 +9,10 @@
     <meta name="theme-color" content="#f7f9fb">
     <title>Collected Donations</title>
 
+    <!-- Link to PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
     <!-- Clean, Native-App Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -585,6 +589,15 @@
             document.getElementById('resultContainer').style.display = 'none';
             document.getElementById('formContainer').style.display = 'block';
             window.scrollTo(0, 0);
+        }
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registered!'))
+                    .catch(err => console.error('Service Worker registration failed:', err));
+            });
         }
     </script>
 </body>

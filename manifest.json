@@ -1,0 +1,21 @@
+{
+  "short_name": "Donations",
+  "name": "Collected Donations",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#f7f9fb",
+  "display": "standalone",
+  "theme_color": "#0058bc",
+  "orientation": "portrait"
+}
