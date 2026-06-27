@@ -1,7 +1,6 @@
 const CACHE_NAME = 's24-cache-v1';
 const ASSETS = [
   './',
-  './index.html',
   './template.png',
   './manifest.json'
 ];
