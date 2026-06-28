@@ -247,18 +247,18 @@ canvas {
 #resultContainer { display: none; text-align: center; padding-top: 24px;}
 
 .success-icon-circle {
-  width: 64px;
+  /* width: 64px;
   height: 64px;
-  border-radius: 50%;
+  border-radius: 50%; */
   background: #d3e4fe;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 16px auto;
+  margin: 0 auto 6px auto;
 }
 .success-icon-circle svg {
-  width: 32px;
-  height: 32px;
+  width: 54px;
+  height: 54px;
   fill: #0058bc;
 }
 
