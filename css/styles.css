@@ -249,8 +249,8 @@ canvas {
 .success-icon-circle {
   /* width: 64px;
   height: 64px;
-  border-radius: 50%; */
-  background: #d3e4fe;
+  border-radius: 50%;
+  background: #d3e4fe; */
   display: flex;
   align-items: center;
   justify-content: center;
