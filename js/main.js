@@ -81,7 +81,7 @@ function generateImage() {
     const oCtx = outCanvas.getContext('2d');
 
     oCtx.drawImage(bgImg, 0, 0);
-    oCtx.font = "26px Arial"; oCtx.fillStyle = "black";
+    oCtx.fillStyle = "black";
 
     const dateVal = document.getElementById('dateInput').value;
     const dParts = dateVal.split('-'); 
@@ -91,15 +91,18 @@ function generateImage() {
     const local = parseFloat(document.getElementById('localInput').value) || 0;
     const total = ww + local;
 
-    oCtx.fillText(formattedDate, outCanvas.width * 0.76, outCanvas.height * 0.185);
-    oCtx.fillText('$' + ww.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.385);
-    oCtx.fillText('$' + local.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.45);
+    oCtx.font = "32px Arial";
+    oCtx.fillText(formattedDate, outCanvas.width * 0.77, outCanvas.height * 0.180);
+
+    // 2. Money Fields - Bold & Larger (34px)
+    oCtx.font = "bold 38px Arial";
+    oCtx.fillText('$' + ww.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.38);
+    oCtx.fillText('$' + local.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.44);
     oCtx.fillText('$' + total.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.69);
-    
-    oCtx.font = "22px Arial";
+
+    // 3. Notes - Slightly Larger (24px)
+    oCtx.font = "30px Arial";
     oCtx.fillText(document.getElementById('noteInput').value, outCanvas.width * 0.22, outCanvas.height * 0.925);
-    
-    oCtx.drawImage(canvas, outCanvas.width * 0.13, outCanvas.height * 0.68, outCanvas.width * 0.25, outCanvas.height * 0.1);
 
     // Update summary card
     document.getElementById('summaryTotal').innerText = `$${total.toFixed(2)}`;
