@@ -94,15 +94,18 @@ function generateImage() {
     oCtx.font = "32px Arial";
     oCtx.fillText(formattedDate, outCanvas.width * 0.77, outCanvas.height * 0.180);
 
-    // 2. Money Fields - Bold & Larger (34px)
+    // 2. Money Fields - Bold & Larger (38px)
     oCtx.font = "bold 38px Arial";
     oCtx.fillText('$' + ww.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.38);
     oCtx.fillText('$' + local.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.44);
     oCtx.fillText('$' + total.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.69);
 
-    // 3. Notes - Slightly Larger (24px)
+    // 3. Notes - Slightly Larger (30px)
     oCtx.font = "30px Arial";
     oCtx.fillText(document.getElementById('noteInput').value, outCanvas.width * 0.22, outCanvas.height * 0.925);
+
+     // 4. Draw Signature onto final form
+    oCtx.drawImage(canvas, outCanvas.width * 0.13, outCanvas.height * 0.68, outCanvas.width * 0.25, outCanvas.height * 0.1);
 
     // Update summary card
     document.getElementById('summaryTotal').innerText = `$${total.toFixed(2)}`;

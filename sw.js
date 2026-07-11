@@ -1,4 +1,4 @@
-const CACHE_NAME = 's24-cache-v4';
+const CACHE_NAME = 's24-cache-v5';
 const ASSETS = [
   './',
   './manifest.json',
