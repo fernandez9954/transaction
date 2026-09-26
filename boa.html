@@ -296,7 +296,7 @@
             </g>
             <g id="TimeMilitary" transform="matrix(1,0,0,1,103.777255,-18.382988)">
                 <text x="42px" y="155.742px"
-                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">11:52</text>
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;"></text>
             </g>
             <g id="SerialNumber" transform="matrix(1,0,0,1,75,221.677165)">
                 <text x="42px" y="155.742px"
@@ -620,14 +620,6 @@
         // Initialize dynamic values on page load / refresh
         function initializeDefaults() {
             const now = new Date();
-
-            // Military time (HH:mm)
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const timeInput = document.getElementById('inputTime');
-            if (timeInput) {
-                timeInput.value = `${hours}:${minutes}`;
-            }
 
             // Sync current date (YYYY-MM-DD for native date picker)
             const yearFull = now.getFullYear();
