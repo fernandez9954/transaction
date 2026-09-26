@@ -175,7 +175,8 @@
             </div>
             <div class="field">
                 <label>Military Time</label>
-                <input type="text" id="inputTime" value="11:52" oninput="updateReceipt()">
+                <input type="text" id="inputTime" inputmode="numeric" maxlength="5" placeholder="HH:MM"
+                    oninput="handleTimeInput()" onblur="formatTimeInput()" onchange="formatTimeInput()">
             </div>
         </div>
 
@@ -487,6 +488,35 @@
             updateReceipt();
         }
 
+        // Auto-formats Military Time with a colon as numbers are typed on the numeric keypad
+        function handleTimeInput() {
+            const input = document.getElementById('inputTime');
+            if (!input) return;
+            const digits = input.value.replace(/\D/g, '').slice(0, 4);
+            if (digits.length >= 3) {
+                input.value = `${digits.slice(0, 2)}:${digits.slice(2)}`;
+            } else {
+                input.value = digits;
+            }
+            updateReceipt();
+        }
+
+        // Ensures time is properly formatted (e.g. 945 -> 09:45) on blur
+        function formatTimeInput() {
+            const input = document.getElementById('inputTime');
+            if (!input || !input.value.trim()) return;
+            let digits = input.value.replace(/\D/g, '').slice(0, 4);
+            if (digits.length === 3) {
+                digits = '0' + digits;
+            } else if (digits.length === 1 || digits.length === 2) {
+                digits = digits.padStart(2, '0') + '00';
+            }
+            if (digits.length === 4) {
+                input.value = `${digits.slice(0, 2)}:${digits.slice(2)}`;
+            }
+            updateReceipt();
+        }
+
         // Update the SVG immediately when typing
         function updateReceipt() {
             const rawAmt = document.getElementById('inputAmount').value;
@@ -532,8 +562,9 @@
 
         // Converts the live SVG into a PNG and shares/downloads it (supports "Save to Photos" on mobile)
         function downloadImage() {
-            // Ensure amount is formatted if entered
+            // Ensure amount and time are formatted if entered
             formatAmountInput();
+            formatTimeInput();
 
             const svg = document.getElementById('receipt-svg');
             const svgData = new XMLSerializer().serializeToString(svg);
@@ -635,6 +666,17 @@
                 if (e.key === 'Enter') {
                     handleSerialInput();
                     serialEl.blur();
+                }
+            });
+        }
+
+        // Pressing Enter in the Time input will format and commit it
+        const timeEl = document.getElementById('inputTime');
+        if (timeEl) {
+            timeEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    formatTimeInput();
+                    timeEl.blur();
                 }
             });
         }
