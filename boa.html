@@ -55,8 +55,9 @@
 
         label {
             font-weight: 600;
-            font-size: 13px;
+            font-size: .9rem;
             color: #475569;
+            margin-bottom: .275rem;
         }
 
         input {
@@ -64,7 +65,7 @@
             padding: 10px 12px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 1.2rem;
             font-family: inherit;
             background: white;
             color: #0f172a;
@@ -113,7 +114,7 @@
             border: none;
             padding: 12px;
             font-weight: 600;
-            font-size: 16px;
+            font-size: 1.1rem;
             border-radius: 6px;
             cursor: pointer;
             width: 100%;
@@ -158,13 +159,12 @@
         <div class="row">
             <div class="field">
                 <label>Amount ($)</label>
-                <input type="text" id="inputAmount" inputmode="decimal" value="4.00" oninput="updateReceipt()"
+                <input type="text" id="inputAmount" inputmode="decimal" oninput="updateReceipt()"
                     onblur="formatAmountInput()" onchange="formatAmountInput()">
             </div>
             <div class="field">
                 <label>Serial Number</label>
-                <input type="text" id="inputSerial" inputmode="decimal" maxlength="4" value="3938"
-                    oninput="handleSerialInput()" onblur="formatSerialInput()" onchange="formatSerialInput()">
+                <input type="text" id="inputSerial" inputmode="decimal" maxlength="4" oninput="handleSerialInput()">
             </div>
         </div>
 
@@ -275,7 +275,7 @@
             <!-- DYNAMIC TARGETS (Amount, Date, Time, Serial) -->
             <g id="Amount" transform="matrix(1,0,0,1,197.766052,142)">
                 <text x="212px" y="155.742px" text-anchor="end"
-                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;text-anchor:end;">$4.00</text>
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;text-anchor:end;"></text>
             </g>
             <g id="Date" transform="matrix(1,0,0,1,197.766052,158)">
                 <text x="212px" y="155.742px" text-anchor="end"
@@ -283,11 +283,11 @@
             </g>
             <g id="Amount1" transform="matrix(1,0,0,1,197.766052,174)">
                 <text x="212px" y="155.742px" text-anchor="end"
-                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;text-anchor:end;">$4.00</text>
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;text-anchor:end;"></text>
             </g>
             <g id="Amount2" transform="matrix(1,0,0,1,197.766052,204)">
                 <text x="212px" y="155.742px" text-anchor="end"
-                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;text-anchor:end;">$4.00</text>
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;text-anchor:end;"></text>
             </g>
             <g id="Date1" transform="matrix(1,0,0,1,4.777255,-18.382988)">
                 <text x="42px" y="155.742px"
@@ -299,7 +299,7 @@
             </g>
             <g id="SerialNumber" transform="matrix(1,0,0,1,75,221.677165)">
                 <text x="42px" y="155.742px"
-                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">3938</text>
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;"></text>
             </g>
             <!-- END DYNAMIC TARGETS -->
 
@@ -445,11 +445,11 @@
     <script>
         // Formats a value for SVG display with a dollar sign and 2 decimals ($5.00)
         function formatReceiptAmount(val) {
-            if (!val) return '$0.00';
+            if (!val || !val.trim()) return '';
             const cleaned = String(val).replace(/[^0-9.]/g, '');
-            if (!cleaned) return '$0.00';
+            if (!cleaned) return '';
             const num = parseFloat(cleaned);
-            if (isNaN(num)) return '$0.00';
+            if (isNaN(num)) return '';
             return `$${num.toFixed(2)}`;
         }
 
@@ -469,7 +469,7 @@
         // Formats the input field itself into 2 decimal format (e.g. 5 -> 5.00, 13 -> 13.00)
         function formatAmountInput() {
             const input = document.getElementById('inputAmount');
-            if (!input) return;
+            if (!input || !input.value.trim()) return;
             const cleaned = input.value.replace(/[^0-9.]/g, '');
             if (cleaned === '') return;
             const num = parseFloat(cleaned);
@@ -484,20 +484,6 @@
             const input = document.getElementById('inputSerial');
             if (!input) return;
             input.value = input.value.replace(/\D/g, '').slice(0, 4);
-            updateReceipt();
-        }
-
-        // Guarantees Serial Number is strictly 4 digits (pads with zeros if less, randomizes if empty)
-        function formatSerialInput() {
-            const input = document.getElementById('inputSerial');
-            if (!input) return;
-            let val = input.value.replace(/\D/g, '').slice(0, 4);
-            if (val.length > 0 && val.length < 4) {
-                val = val.padStart(4, '0');
-            } else if (val.length === 0) {
-                val = String(Math.floor(1000 + Math.random() * 9000));
-            }
-            input.value = val;
             updateReceipt();
         }
 
@@ -546,9 +532,8 @@
 
         // Converts the live SVG into a PNG and shares/downloads it (supports "Save to Photos" on mobile)
         function downloadImage() {
-            // Ensure inputs are formatted before export
+            // Ensure amount is formatted if entered
             formatAmountInput();
-            formatSerialInput();
 
             const svg = document.getElementById('receipt-svg');
             const svgData = new XMLSerializer().serializeToString(svg);
@@ -613,13 +598,6 @@
                 timeInput.value = `${hours}:${minutes}`;
             }
 
-            // Random 4-digit serial number
-            const randomSerial = String(Math.floor(1000 + Math.random() * 9000));
-            const serialInput = document.getElementById('inputSerial');
-            if (serialInput) {
-                serialInput.value = randomSerial;
-            }
-
             // Sync current date (YYYY-MM-DD for native date picker)
             const yearFull = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -629,9 +607,11 @@
                 dateInput.value = `${yearFull}-${month}-${day}`;
             }
 
-            // Format default fields
-            formatAmountInput();
-            formatSerialInput();
+            // Amount and Serial Number remain blank on refresh
+            const amountInput = document.getElementById('inputAmount');
+            if (amountInput && amountInput.value.trim()) {
+                formatAmountInput();
+            }
 
             // Render to SVG
             updateReceipt();
@@ -648,12 +628,12 @@
             });
         }
 
-        // Pressing Enter in the Serial Number input will format and commit it
+        // Pressing Enter in the Serial Number input will commit it
         const serialEl = document.getElementById('inputSerial');
         if (serialEl) {
             serialEl.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
-                    formatSerialInput();
+                    handleSerialInput();
                     serialEl.blur();
                 }
             });
