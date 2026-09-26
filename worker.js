@@ -100,8 +100,9 @@ export default {
       return Response.redirect(new URL('/boa', request.url), 301);
     }
 
-    // 4. Public assets needed to render pin.html, favicon, and PWA manifest/icons
+    // 4. Public assets needed to render pin.html, favicon, and PWA manifest/icons/service-worker
     const isPublic =
+      url.pathname === '/sw.js' ||
       url.pathname === '/js/theme.js' ||
       url.pathname === '/manifest.json' ||
       url.pathname === '/favicon.ico' ||
