@@ -80,7 +80,7 @@
 body {
   font-family: var(--font-system);
   margin: 0;
-  padding: 0 0 80px 0;
+  padding: 0 0 10px 0;
   background-color: var(--bg-body);
   color: var(--text-primary);
   touch-action: manipulation;
@@ -105,7 +105,7 @@ header h1 {
   font-family: var(--font-system);
   font-size: 36px;
   line-height: 40px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--primary-color);
   margin: 0;
   letter-spacing: -0.02em;
@@ -124,7 +124,7 @@ header h1 {
 .row {
   display: flex;
   flex-direction: column;
-  padding: 20px 0;
+  padding: 20px 0 5px 0;
   border-bottom: 1px solid var(--border-color);
   gap: 12px;
   transition: border-color 0.2s ease;

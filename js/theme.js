@@ -59,8 +59,8 @@
   const STYLES = `
     .theme-dropup-container {
       position: fixed;
-      bottom: 20px;
-      bottom: max(20px, env(safe-area-inset-bottom, 20px));
+      top: 20px;
+      top: max(20px, env(safe-area-inset-bottom, 20px));
       right: 20px;
       right: max(20px, env(safe-area-inset-right, 20px));
       z-index: 10000;
