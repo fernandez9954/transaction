@@ -1,17 +1,14 @@
-const CACHE_NAME = 's24-cache-v5';
+const CACHE_NAME = 's24-cache-v8';
 const ASSETS = [
   './',
   './manifest.json',
   './css/styles.css',
+  './js/theme.js',
+  './js/template-data.js',
   './js/main.js',
   './img/template.png',
   './img/icon-192.png',
-  './img/icon-512.png',
-  './fonts/Inter-400.woff2',
-  './fonts/Inter-500.woff2',
-  './fonts/Inter-600.woff2',
-  './fonts/HankenGrotesk-600.woff2',
-  './fonts/HankenGrotesk-700.woff2'
+  './img/icon-512.png'
 ];
 
 // 1. Cache assets on install for offline use

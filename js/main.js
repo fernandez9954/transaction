@@ -72,55 +72,74 @@ function generateImage() {
     return;
   }
 
-  document.getElementById('genBtn').innerText = "Generating...";
+  const genBtn = document.getElementById('genBtn');
+  genBtn.innerText = "Generating...";
   
   const bgImg = new Image();
   bgImg.onload = function() {
-    const outCanvas = document.createElement('canvas');
-    outCanvas.width = bgImg.width; outCanvas.height = bgImg.height;
-    const oCtx = outCanvas.getContext('2d');
+    try {
+      const outCanvas = document.createElement('canvas');
+      outCanvas.width = bgImg.width; outCanvas.height = bgImg.height;
+      const oCtx = outCanvas.getContext('2d');
 
-    oCtx.drawImage(bgImg, 0, 0);
-    oCtx.fillStyle = "black";
+      oCtx.drawImage(bgImg, 0, 0);
+      oCtx.fillStyle = "black";
 
-    const dateVal = document.getElementById('dateInput').value;
-    const dParts = dateVal.split('-'); 
-    const formattedDate = `${dParts[1]}/${dParts[2]}/${dParts[0].slice(-2)}`;
+      const dateVal = document.getElementById('dateInput').value;
+      let formattedDate = '';
+      if (dateVal && dateVal.includes('-')) {
+        const dParts = dateVal.split('-'); 
+        formattedDate = `${dParts[1]}/${dParts[2]}/${dParts[0].slice(-2)}`;
+      } else {
+        const now = new Date();
+        formattedDate = `${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}/${String(now.getFullYear()).slice(-2)}`;
+      }
 
-    const ww = parseFloat(document.getElementById('wwInput').value) || 0;
-    const local = parseFloat(document.getElementById('localInput').value) || 0;
-    const total = ww + local;
+      const ww = parseFloat(document.getElementById('wwInput').value) || 0;
+      const local = parseFloat(document.getElementById('localInput').value) || 0;
+      const total = ww + local;
 
-    oCtx.font = "32px Arial";
-    oCtx.fillText(formattedDate, outCanvas.width * 0.77, outCanvas.height * 0.180);
+      oCtx.font = "32px Arial";
+      oCtx.fillText(formattedDate, outCanvas.width * 0.77, outCanvas.height * 0.180);
 
-    // 2. Money Fields - Bold & Larger (38px)
-    oCtx.font = "bold 38px Arial";
-    oCtx.fillText('$' + ww.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.38);
-    oCtx.fillText('$' + local.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.44);
-    oCtx.fillText('$' + total.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.69);
+      // 2. Money Fields - Bold & Larger (38px)
+      oCtx.font = "bold 38px Arial";
+      oCtx.fillText('$' + ww.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.38);
+      oCtx.fillText('$' + local.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.44);
+      oCtx.fillText('$' + total.toFixed(2), outCanvas.width * 0.76, outCanvas.height * 0.69);
 
-    // 3. Notes - Slightly Larger (30px)
-    oCtx.font = "30px Arial";
-    oCtx.fillText(document.getElementById('noteInput').value, outCanvas.width * 0.22, outCanvas.height * 0.925);
+      // 3. Notes - Slightly Larger (30px)
+      oCtx.font = "30px Arial";
+      oCtx.fillText(document.getElementById('noteInput').value, outCanvas.width * 0.22, outCanvas.height * 0.925);
 
-     // 4. Draw Signature onto final form
-    oCtx.drawImage(canvas, outCanvas.width * 0.13, outCanvas.height * 0.68, outCanvas.width * 0.25, outCanvas.height * 0.1);
+      // 4. Draw Signature onto final form
+      oCtx.drawImage(canvas, outCanvas.width * 0.13, outCanvas.height * 0.68, outCanvas.width * 0.25, outCanvas.height * 0.1);
 
-    // Update summary card
-    document.getElementById('summaryTotal').innerText = `$${total.toFixed(2)}`;
-    document.getElementById('summaryWW').innerText = `WW: $${ww.toFixed(2)}`;
-    document.getElementById('summaryLocal').innerText = `Local: $${local.toFixed(2)}`;
+      // Update summary card
+      document.getElementById('summaryTotal').innerText = `$${total.toFixed(2)}`;
+      document.getElementById('summaryWW').innerText = `WW: $${ww.toFixed(2)}`;
+      document.getElementById('summaryLocal').innerText = `Local: $${local.toFixed(2)}`;
 
-    // Output logic
-    const finalData = outCanvas.toDataURL("image/png");
-    document.getElementById('finalImage').src = finalData;
-    
-    document.getElementById('formContainer').style.display = 'none';
-    document.getElementById('resultContainer').style.display = 'block';
+      // Output logic
+      const finalData = outCanvas.toDataURL("image/png");
+      document.getElementById('finalImage').src = finalData;
+      
+      document.getElementById('formContainer').style.display = 'none';
+      document.getElementById('resultContainer').style.display = 'block';
+    } catch (err) {
+      console.error("Error generating image:", err);
+      alert("Error generating image: " + err.message);
+      genBtn.innerText = "Generate Record";
+    }
   };
-  // Updated path to use your new img/ directory!
-  bgImg.src = 'img/template.png'; 
+
+  bgImg.onerror = function() {
+    alert("Could not load template image.");
+    genBtn.innerText = "Generate Record";
+  };
+
+  // Uses embedded data URI to prevent file:// protocol tainted canvas security errors
+  bgImg.src = (typeof TEMPLATE_DATA !== 'undefined' && TEMPLATE_DATA) ? TEMPLATE_DATA : 'img/template.png'; 
 }
 
 // 4. Reset flow
