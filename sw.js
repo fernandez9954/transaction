@@ -1,4 +1,4 @@
-const CACHE_NAME = 's24-cache-v9';
+const CACHE_NAME = 's24-offline-cache';
 const ASSETS = [
   './',
   './boa',
@@ -13,8 +13,9 @@ const ASSETS = [
   './img/icon-512.png'
 ];
 
-// 1. Cache assets on install for offline use
+// 1. Install & take over immediately without waiting for tabs to close
 self.addEventListener('install', (e) => {
+  self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS);
@@ -22,27 +23,35 @@ self.addEventListener('install', (e) => {
   );
 });
 
-// 2. Clean up old caches if we update the app
+// 2. Claim clients immediately and purge all legacy versioned caches
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    })
+    Promise.all([
+      self.clients.claim(),
+      caches.keys().then((keys) => {
+        return Promise.all(
+          keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
+        );
+      })
+    ])
   );
 });
 
-// 3. Serve files from cache when offline
+// 3. Network-First with automatic cache updating
+// Always pulls the latest changes when online; falls back to cache when offline
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      return cachedResponse || fetch(e.request);
-    })
+    fetch(e.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, responseClone);
+          });
+        }
+        return networkResponse;
+      })
+      .catch(() => caches.match(e.request))
   );
 });
 
@@ -50,8 +59,8 @@ self.addEventListener('fetch', (e) => {
 self.addEventListener('push', (e) => {
   const options = {
     body: "Don't forget to submit your S-24 record today!",
-    icon: './icon-192.png',
-    badge: './icon-192.png',
+    icon: './img/icon-192.png',
+    badge: './img/icon-192.png',
     vibrate: [100, 50, 100],
     data: { url: './' }
   };
