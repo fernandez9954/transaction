@@ -101,7 +101,7 @@
     }
     .theme-menu {
       position: absolute;
-      bottom: 54px;
+      top: 54px;
       right: 0;
       min-width: 145px;
       background: rgba(255, 255, 255, 0.96);
