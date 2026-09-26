@@ -117,20 +117,32 @@ export default {
 
     if (!isAuthenticated) {
       // Unauthenticated: intercept and serve pin.html directly at current URL with no-cache headers
-      const pinRequest = new Request(new URL('/pin.html', request.url), request);
-      const pinResponse = await env.ASSETS.fetch(pinRequest);
+      let pinResponse = await env.ASSETS.fetch(new Request(new URL('/pin.html', request.url)));
+
+      // If Cloudflare Assets returns a 3xx redirect (e.g. clean URL redirect), follow the Location header
+      if (pinResponse.status >= 300 && pinResponse.status < 400) {
+        const redirectUrl = pinResponse.headers.get('Location');
+        if (redirectUrl) {
+          pinResponse = await env.ASSETS.fetch(new Request(new URL(redirectUrl, request.url)));
+        }
+      }
+
       const pinHeaders = new Headers(pinResponse.headers);
+      pinHeaders.delete('location'); // Strip any accidental redirect header so browser renders HTML
+      pinHeaders.set('Content-Type', 'text/html; charset=utf-8');
       pinHeaders.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+
       return new Response(pinResponse.body, {
         status: 200,
-        statusText: pinResponse.statusText,
         headers: pinHeaders
       });
     }
 
-    // 6. Authenticated: handle route aliases like /boa -> /boa.html
+    // 6. Authenticated: handle route aliases like / -> /index.html and /boa -> /boa.html
     let assetRequest = request;
-    if (url.pathname === '/boa') {
+    if (url.pathname === '/' || url.pathname === '') {
+      assetRequest = new Request(new URL('/index.html', request.url), request);
+    } else if (url.pathname === '/boa') {
       assetRequest = new Request(new URL('/boa.html', request.url), request);
     }
 
