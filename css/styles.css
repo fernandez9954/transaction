@@ -77,19 +77,22 @@
    2. APPLICATION STYLING
    ========================================== */
 
-body { 
-  font-family: var(--font-system); 
-  margin: 0; 
-  padding: 0 0 80px 0; 
-  background-color: var(--bg-body); 
-  color: var(--text-primary); 
+body {
+  font-family: var(--font-system);
+  margin: 0;
+  padding: 0 0 80px 0;
+  background-color: var(--bg-body);
+  color: var(--text-primary);
   touch-action: manipulation;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
-* { box-sizing: border-box; }
+
+* {
+  box-sizing: border-box;
+}
 
 /* Top Header */
 header {
@@ -97,6 +100,7 @@ header {
   background-color: var(--bg-body);
   transition: background-color 0.2s ease;
 }
+
 header h1 {
   font-family: var(--font-system);
   font-size: 36px;
@@ -125,6 +129,7 @@ header h1 {
   gap: 12px;
   transition: border-color 0.2s ease;
 }
+
 .row-horizontal {
   display: flex;
   flex-direction: row;
@@ -144,7 +149,8 @@ label {
 }
 
 /* Inputs */
-input[type="date"], input[type="text"] {
+input[type="date"],
+input[type="text"] {
   width: 100%;
   font-family: var(--font-system);
   font-size: 18px;
@@ -157,6 +163,7 @@ input[type="date"], input[type="text"] {
   appearance: none;
   transition: color 0.2s ease;
 }
+
 input[type="text"] {
   background: var(--input-bg);
   border: 1px solid var(--input-border);
@@ -165,7 +172,10 @@ input[type="text"] {
   margin-top: 4px;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
-input[type="date"] { text-align: right; }
+
+input[type="date"] {
+  text-align: right;
+}
 
 /* Huge Money Inputs */
 .money-group {
@@ -173,13 +183,15 @@ input[type="date"] { text-align: right; }
   align-items: center;
   gap: 8px;
 }
+
 .money-group span {
   font-family: var(--font-system);
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 300;
   color: var(--text-primary);
   transition: color 0.2s ease;
 }
+
 .money-group input {
   font-family: var(--font-system);
   font-size: 32px;
@@ -194,7 +206,11 @@ input[type="date"] { text-align: right; }
   appearance: none;
   transition: color 0.2s ease;
 }
-.money-group input::placeholder { color: var(--text-muted); font-weight: 600; }
+
+.money-group input::placeholder {
+  color: var(--text-muted);
+  font-weight: 600;
+}
 
 /* Signature Area */
 .sig-container {
@@ -202,12 +218,14 @@ input[type="date"] { text-align: right; }
   flex-direction: column;
   padding: 24px 0;
 }
+
 .sig-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
 }
+
 .btn-clear {
   color: var(--primary-color);
   background: transparent;
@@ -218,6 +236,7 @@ input[type="date"] { text-align: right; }
   padding: 0;
   transition: color 0.2s ease;
 }
+
 .canvas-wrapper {
   position: relative;
   width: 100%;
@@ -232,6 +251,7 @@ input[type="date"] { text-align: right; }
   touch-action: none;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
+
 .canvas-placeholder {
   position: absolute;
   color: var(--canvas-placeholder);
@@ -240,6 +260,7 @@ input[type="date"] { text-align: right; }
   user-select: none;
   transition: color 0.2s ease;
 }
+
 canvas {
   position: absolute;
   top: 0;
@@ -262,13 +283,17 @@ canvas {
   border: none;
   margin-top: 16px;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: opacity 0.2s, background-color 0.2s ease;
 }
+
 .btn-submit:hover {
   background: var(--btn-submit-hover);
 }
-.btn-submit:active { opacity: 0.8; }
+
+.btn-submit:active {
+  opacity: 0.8;
+}
 
 .btn-secondary {
   width: 100%;
@@ -284,10 +309,17 @@ canvas {
   cursor: pointer;
   transition: background 0.15s, color 0.2s ease, border-color 0.2s ease;
 }
-.btn-secondary:active { background: var(--secondary-btn-active); }
+
+.btn-secondary:active {
+  background: var(--secondary-btn-active);
+}
 
 /* Success Screen Elegant Layout */
-#resultContainer { display: none; text-align: center; padding-top: 24px;}
+#resultContainer {
+  display: none;
+  text-align: center;
+  padding-top: 24px;
+}
 
 .success-icon-circle {
   display: flex;
@@ -295,6 +327,7 @@ canvas {
   justify-content: center;
   margin: 0 auto 6px auto;
 }
+
 .success-icon-circle svg {
   width: 54px;
   height: 54px;
@@ -302,12 +335,12 @@ canvas {
   transition: stroke 0.2s ease;
 }
 
-.success-title { 
-  font-family: var(--font-system); 
-  font-size: 32px; 
-  color: var(--primary-color); 
-  margin: 0 0 24px 0; 
-  font-weight: 700; 
+.success-title {
+  font-family: var(--font-system);
+  font-size: 32px;
+  color: var(--primary-color);
+  margin: 0 0 24px 0;
+  font-weight: 700;
   letter-spacing: -0.01em;
   transition: color 0.2s ease;
 }
@@ -324,6 +357,7 @@ canvas {
   -webkit-backdrop-filter: blur(12px);
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
+
 .card-label {
   font-size: 11px;
   font-weight: 600;
@@ -334,6 +368,7 @@ canvas {
   margin-bottom: 4px;
   transition: color 0.2s ease;
 }
+
 .card-total {
   font-family: var(--font-system);
   font-size: 36px;
@@ -342,6 +377,7 @@ canvas {
   margin: 0;
   transition: color 0.2s ease;
 }
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -356,6 +392,7 @@ canvas {
   margin-top: 12px;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
+
 .badge-divider {
   width: 1px;
   height: 12px;
@@ -379,6 +416,7 @@ canvas {
   color: var(--text-secondary);
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
+
 .instruction-box svg {
   width: 20px;
   height: 20px;
@@ -387,7 +425,11 @@ canvas {
   margin-top: 2px;
   transition: fill 0.2s ease;
 }
-.instruction-box strong { color: var(--text-primary); transition: color 0.2s ease; }
+
+.instruction-box strong {
+  color: var(--text-primary);
+  transition: color 0.2s ease;
+}
 
 /* Receipt container styling */
 .receipt-container {
@@ -401,6 +443,7 @@ canvas {
   background: var(--input-bg);
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
+
 #finalImage {
   width: 100%;
   height: auto;
@@ -422,6 +465,7 @@ canvas {
   margin-bottom: 24px;
   transition: color 0.2s ease;
 }
+
 .step3-footer strong {
   color: var(--text-primary);
   transition: color 0.2s ease;
