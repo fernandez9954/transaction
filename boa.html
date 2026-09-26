@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Receipt Generator</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="img/icon-192.png">
     <!-- Centralized Theme Manager & Floating Drop-up Switcher -->
     <script src="js/theme.js"></script>
     <style>
@@ -733,9 +737,15 @@
 
         // Run initialization immediately on load
         window.addEventListener('DOMContentLoaded', initializeDefaults);
-        // Fallback in case DOM is already parsed
         if (document.readyState === 'interactive' || document.readyState === 'complete') {
             initializeDefaults();
+        }
+
+        // Register Service Worker for offline PWA functionality
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(err => {
+                console.log('SW registration skipped:', err);
+            });
         }
     </script>
 </body>
