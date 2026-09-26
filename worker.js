@@ -34,10 +34,10 @@ function getCookie(request, name) {
 }
 
 /**
- * Generates an HttpOnly, Secure, SameSite=Strict cookie header
+ * Generates an HttpOnly, Secure, SameSite=Lax cookie header
  */
 function buildAuthCookie(token, maxAgeSeconds = ONE_YEAR_SECONDS) {
-  return `${COOKIE_NAME}=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${maxAgeSeconds}`;
+  return `${COOKIE_NAME}=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAgeSeconds}`;
 }
 
 export default {

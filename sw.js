@@ -1,4 +1,4 @@
-const CACHE_NAME = 's24-offline-cache';
+const CACHE_NAME = 's24-offline-cache-v2';
 const ASSETS = [
   './',
   './boa',
@@ -44,10 +44,13 @@ self.addEventListener('fetch', (e) => {
     fetch(e.request)
       .then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(e.request, responseClone);
-          });
+          const cacheControl = networkResponse.headers.get('Cache-Control') || '';
+          if (!cacheControl.includes('no-store')) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(e.request, responseClone);
+            });
+          }
         }
         return networkResponse;
       })
