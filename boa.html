@@ -163,20 +163,20 @@
                     onblur="formatAmountInput()" onchange="formatAmountInput()">
             </div>
             <div class="field">
-                <label>Serial Number</label>
-                <input type="text" id="inputSerial" inputmode="decimal" maxlength="4" oninput="handleSerialInput()">
+                <label>Military Time</label>
+                <input type="text" id="inputTime" inputmode="numeric" maxlength="5" placeholder="HH:MM"
+                    oninput="handleTimeInput()" onblur="formatTimeInput()" onchange="formatTimeInput()">
             </div>
         </div>
 
         <div class="row">
             <div class="field">
-                <label>Date</label>
-                <input type="date" id="inputDate" oninput="updateReceipt()" onchange="updateReceipt()">
+                <label>Serial Number</label>
+                <input type="text" id="inputSerial" inputmode="decimal" maxlength="4" oninput="handleSerialInput()">
             </div>
             <div class="field">
-                <label>Military Time</label>
-                <input type="text" id="inputTime" inputmode="numeric" maxlength="5" placeholder="HH:MM"
-                    oninput="handleTimeInput()" onblur="formatTimeInput()" onchange="formatTimeInput()">
+                <label>Date</label>
+                <input type="date" id="inputDate" oninput="updateReceipt()" onchange="updateReceipt()">
             </div>
         </div>
 
