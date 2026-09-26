@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 20px 16px 40px;
+            background-color: #f8fafc;
+            color: #0f172a;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .controls {
+            width: 100%;
+            max-width: 454px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .controls h2 {
+            margin: 0 0 4px 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .field {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: white;
+            color: #0f172a;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #0055c4;
+            box-shadow: 0 0 0 3px rgba(0, 85, 196, 0.15);
+        }
+
+        details {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+            overflow: hidden;
+        }
+
+        summary {
+            padding: 10px 12px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #475569;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        summary:hover {
+            color: #0055c4;
+        }
+
+        .accordion-content {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-top: 1px solid #f1f5f9;
+            background: #f8fafc;
+        }
+
+        button {
+            background-color: #0055c4;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-family: inherit;
+            margin-top: 4px;
+            transition: background-color 0.15s ease;
+        }
+
+        button:hover {
+            background-color: #003a8c;
+        }
+
+        button:active {
+            background-color: #002d6e;
+        }
+
+        .preview {
+            width: 100%;
+            max-width: 454px;
+            display: flex;
+            justify-content: center;
+        }
+
+        #receipt-svg {
+            width: 100%;
+            height: auto;
+            max-width: 454px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            background: white;
+            border-radius: 4px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 1. THE WEB FORM -->
+    <div class="controls">
+        <h2>Edit Receipt</h2>
+
+        <div class="row">
+            <div class="field">
+                <label>Amount ($)</label>
+                <input type="text" id="inputAmount" inputmode="decimal" value="4.00" oninput="updateReceipt()"
+                    onblur="formatAmountInput()" onchange="formatAmountInput()">
+            </div>
+            <div class="field">
+                <label>Serial Number</label>
+                <input type="text" id="inputSerial" inputmode="decimal" maxlength="4" value="3938"
+                    oninput="handleSerialInput()" onblur="formatSerialInput()" onchange="formatSerialInput()">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="field">
+                <label>Date</label>
+                <input type="date" id="inputDate" oninput="updateReceipt()" onchange="updateReceipt()">
+            </div>
+            <div class="field">
+                <label>Military Time</label>
+                <input type="text" id="inputTime" value="11:52" oninput="updateReceipt()">
+            </div>
+        </div>
+
+        <details>
+            <summary>Location Settings (Optional)</summary>
+            <div class="accordion-content">
+                <div class="field">
+                    <label>Street Address</label>
+                    <input type="text" id="inputStreet" value="*GRIFFIN ROAD" oninput="updateReceipt()">
+                </div>
+                <div class="field">
+                    <label>City</label>
+                    <input type="text" id="inputCity" value="COOPER CITY" oninput="updateReceipt()">
+                </div>
+            </div>
+        </details>
+
+        <button onclick="downloadImage()">Save / Download Image</button>
+    </div>
+
+    <!-- 2. YOUR RAW SVG -->
+    <div class="preview" id="svg-container">
+        <!-- I changed width/height to 454x766 to ensure it downloads at the exact right resolution -->
+        <svg id="receipt-svg" width="454" height="766" viewBox="0 0 454 766" version="1.1"
+            xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"
+            style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+            <g transform="matrix(1,0,0,1,-308,-2)">
+                <g transform="matrix(0.969179,0.928567,-0.928567,0.969179,553.888613,635.693071)">
+                    <path
+                        d="M0.676,6.941C3.12,4.419 6.488,2.995 10,3C13.657,3 16.963,4.511 19.324,6.941C19.608,7.233 19.604,7.706 19.316,7.994L18.963,8.348C18.822,8.489 18.631,8.568 18.432,8.568C18.23,8.568 18.035,8.486 17.894,8.34C15.894,6.28 13.097,5 10,5C6.903,5 4.106,6.28 2.106,8.34C1.965,8.486 1.77,8.568 1.568,8.568C1.369,8.568 1.178,8.489 1.037,8.348L0.684,7.994C0.396,7.706 0.392,7.233 0.676,6.941M3.501,9.774C5.196,8.001 7.547,6.998 10,7C12.453,6.998 14.804,8.001 16.499,9.774C16.779,10.067 16.774,10.536 16.488,10.823L16.134,11.177C15.993,11.317 15.803,11.396 15.604,11.396C15.399,11.396 15.203,11.313 15.062,11.165C13.743,9.781 11.912,8.998 10,9C8.01,9 6.214,9.83 4.939,11.165C4.798,11.313 4.601,11.397 4.397,11.397C4.198,11.397 4.007,11.318 3.866,11.177L3.512,10.823C3.225,10.536 3.221,10.065 3.502,9.773M6.322,12.613C7.268,11.585 8.603,11 10,11C11.456,11 12.767,11.623 13.68,12.614C13.951,12.908 13.941,13.37 13.658,13.653L13.304,14.007C13.163,14.147 12.973,14.226 12.774,14.226C12.563,14.226 12.361,14.137 12.219,13.981C11.651,13.356 10.844,13 10,13C9.12,13 8.33,13.377 7.78,13.981C7.638,14.137 7.437,14.226 7.226,14.226C7.027,14.226 6.837,14.147 6.696,14.007L6.342,13.653C6.059,13.37 6.05,12.908 6.321,12.614" />
+                </g>
+                <path
+                    d="M542.5,657C546.639,657 550,660.361 550,664.5L550,698.5C550,702.639 546.639,706 542.5,706L527.5,706C523.361,706 520,702.639 520,698.5L520,664.5C520,660.361 523.361,657 527.5,657L542.5,657Z" />
+                <g transform="matrix(0.8,0,0,0.673469,107,219.719639)">
+                    <path
+                        d="M546.102,657C548.253,657 550,659.075 550,661.631L550,701.369C550,703.925 548.253,706 546.102,706L523.898,706C521.747,706 520,703.925 520,701.369L520,661.631C520,659.075 521.747,657 523.898,657L546.102,657Z"
+                        style="fill:white;" />
+                </g>
+                <g transform="matrix(1,0,0,1,-160,2.594514)">
+                    <rect x="686" y="662.189" width="18" height="27.811" />
+                </g>
+                <g transform="matrix(0.333333,0,0,0.316816,335.368695,456.358314)">
+                    <rect x="686" y="662.189" width="18" height="27.811" style="fill:white;" />
+                </g>
+                <g transform="matrix(0.143812,0,0,0.172988,439.236665,555.444805)">
+                    <rect x="686" y="662.189" width="18" height="27.811" style="fill:white;" />
+                </g>
+                <g transform="matrix(0.143812,0,0,0.172988,439.236665,562.024222)">
+                    <rect x="686" y="662.189" width="18" height="27.811" style="fill:white;" />
+                </g>
+                <g transform="matrix(0.143812,0,0,0.172988,439.236665,568.020374)">
+                    <rect x="686" y="662.189" width="18" height="27.811" style="fill:white;" />
+                </g>
+                <g transform="matrix(1,0,0,1,-161.480028,7.806729)">
+                    <rect x="691" y="672.579" width="4.37" height="4.37" style="fill:white;" />
+                </g>
+            </g>
+            <g id="LocationStreet" transform="matrix(1,0,0,1,5.279605,16.430921)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">*GRIFFIN
+                    ROAD</text>
+            </g>
+            <g id="LocationCity" transform="matrix(1,0,0,1,4.777255,35.430921)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">
+                    <tspan id="CityName">COOPER CITY</tspan>
+                    <tspan dx="15px">FL</tspan>
+                </text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,69.896142)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">Deposit
+                    Summary</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,51.430921)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">--------------------------------------------------------------------</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,85.896142)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">Card
+                    Number</text>
+            </g>
+            <g transform="matrix(1,0,0,1,197.766052,86.896142)">
+                <text x="82.254px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">XXXXXXXX3688</text>
+            </g>
+            <g transform="matrix(1,0,0,1,197.766052,104.896142)">
+                <text x="131.851px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">PRIMARY</text>
+            </g>
+            <g transform="matrix(1,0,0,1,197.766052,120.896142)">
+                <text x="133.867px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">Checking</text>
+            </g>
+
+            <!-- DYNAMIC TARGETS (Amount, Date, Time, Serial) -->
+            <g id="Amount" transform="matrix(1,0,0,1,197.766052,142)">
+                <text x="212px" y="155.742px" text-anchor="end"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;text-anchor:end;">$4.00</text>
+            </g>
+            <g id="Date" transform="matrix(1,0,0,1,197.766052,158)">
+                <text x="212px" y="155.742px" text-anchor="end"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;text-anchor:end;">09/25/26</text>
+            </g>
+            <g id="Amount1" transform="matrix(1,0,0,1,197.766052,174)">
+                <text x="212px" y="155.742px" text-anchor="end"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;text-anchor:end;">$4.00</text>
+            </g>
+            <g id="Amount2" transform="matrix(1,0,0,1,197.766052,204)">
+                <text x="212px" y="155.742px" text-anchor="end"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;text-anchor:end;">$4.00</text>
+            </g>
+            <g id="Date1" transform="matrix(1,0,0,1,4.777255,-18.382988)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">09/25/26</text>
+            </g>
+            <g id="TimeMilitary" transform="matrix(1,0,0,1,103.777255,-18.382988)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">11:52</text>
+            </g>
+            <g id="SerialNumber" transform="matrix(1,0,0,1,75,221.677165)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">3938</text>
+            </g>
+            <!-- END DYNAMIC TARGETS -->
+
+            <g transform="matrix(1,0,0,1,4.777255,105.34022)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">Deposit
+                    To</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,142.238244)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">Total
+                    Deposit</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,158.238244)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">Posts
+                    On</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,174.238244)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">Available
+                    Now</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,204)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">Cash
+                    Amount</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,221.677165)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">Ser.
+                    No.</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,288.432802)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">To help
+                    protect you and us from losses</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,307.401891)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">if a
+                    check(s) is returned unpaid, all</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,326.370979)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">deposits
+                    are subject to a hold review at</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,345.340067)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">any time.
+                    It's important you know that</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,364.309155)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">deposit
+                    holds can result in a reduction</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,383.278243)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">of your
+                    available balance. For more</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,402.247332)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">information,
+                    please refer to your Deposit</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,421.21642)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">Agreement
+                    &amp; Disclosures at</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,440.185508)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">bankofamerica.com/deposits/resources/</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,459.154596)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">deposit-agreements.go.deposit.</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,487.175272)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">Member
+                    FDIC</text>
+            </g>
+            <g transform="matrix(1,0,0,1,202.777255,519.15067)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">ATM</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,567.632505)">
+                <text x="57.691px" y="154.453px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:16px;">Next time
+                    use your phone instead of your card.</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,587.233538)">
+                <text x="86.007px" y="154.453px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:16px;">Visit
+                    bankofamerica.com/CardlessATM</text>
+            </g>
+            <g transform="matrix(1,0,0,1,200.474614,-18.382988)">
+                <text x="42px" y="155.742px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">IFLD4732</text>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,-70.10867)">
+                <text x="97.996px" y="155.455px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.4px;">ATMs WHERE
+                    YOU NEED THEM</text>
+            </g>
+            <g transform="matrix(0.227989,0,0,0.227989,226.771654,34.398515)">
+                <g transform="matrix(1,0,0,1,-720,-73)">
+                    <g transform="matrix(2,0,0,2,0,0)">
+                        <path
+                            d="M653.3,72.1C674.3,54.1 703.8,36.6 720,30.3C717.5,28.7 713.6,26.4 709.2,23.9C688.3,30.8 663.9,46.1 642.1,63.4C645.8,66.2 649.7,69.1 653.3,72.1Z"
+                            style="fill-rule:nonzero;" />
+                        <path
+                            d="M643.7,23.2C640.6,21.7 637.2,20.3 634.6,19.1C626.7,23 616.4,28.9 603.4,38.2C606.2,39.7 609.2,41.5 612.4,43.3C622.4,35.9 632.5,28.9 643.7,23.2Z"
+                            style="fill-rule:nonzero;" />
+                        <path
+                            d="M662.4,14.6C658.6,12.5 645.4,7.6 636.3,5.5C633.6,6.5 629.8,8 627.2,9.1C630.5,10 642.8,13.3 653.3,18.6C656,17.3 659.8,15.7 662.4,14.6Z"
+                            style="fill-rule:nonzero;" />
+                        <path
+                            d="M617.7,13.3C606,18.7 593.7,26.1 587,30.4C589.4,31.5 591.8,32.4 595.1,34C609.9,24 621.5,17.9 626.1,15.9C622.8,14.7 619.7,13.9 617.7,13.3Z"
+                            style="fill-rule:nonzero;" />
+                        <path
+                            d="M671.2,11.5C673.9,10.6 677,9.8 679.7,9C671.9,5.7 662.1,2.2 653.3,0C651.9,0.4 647.7,1.5 644.8,2.4C647.8,3.3 657.7,5.6 671.2,11.5ZM621.9,49.1C625.1,51 628.5,53.6 631.8,55.8C653.7,38.8 675.3,25.7 699,18.3C695.7,16.6 692.8,15.1 689.1,13.3C674.9,16.9 650.6,26.6 621.9,49.1Z"
+                            style="fill-rule:nonzero;" />
+                        <path
+                            d="M0,66.9L16,66.9C24.1,66.9 27.9,62.7 27.9,56.8C27.9,52 25.4,48.8 20.2,47.8C24.8,46.7 26.9,43.9 26.9,39.8C26.9,34.6 23.1,30.4 15,30.4L0.1,30.4L0.1,66.9L0,66.9ZM13.9,51.4C16.9,51.4 19,52.9 19,55.9C19,59.1 17,60.4 13.9,60.4L8.7,60.4L8.7,51.3L13.9,51.3L13.9,51.4ZM12.9,36.8C15.9,36.8 18,38.1 18,41.1C18,44.1 16,45.4 12.9,45.4L8.7,45.4L8.7,36.8L12.9,36.8ZM60.2,30.3L51.2,30.3L37.5,66.9L46.6,66.9L49.1,59.3L62.3,59.3L64.8,66.9L74,66.9L60.2,30.3ZM55.7,39.1L60,52.6L51.2,52.6L55.7,39.1ZM119.6,30.3L111.3,30.3L111.3,54.8L95.7,30.3L86.4,30.3L86.4,66.9L94.7,66.9L94.7,42.5L110.3,66.9L119.6,66.9L119.6,30.3ZM157.9,66.9L145.9,48.3L145.9,66.9L137,66.9L137,30.3L145.9,30.3L145.9,47.9L157.3,30.3L167.2,30.3L155.2,47.9L168.3,66.9L157.9,66.9ZM199.8,48.6C199.8,55.9 204.2,60.4 209.9,60.4C215.6,60.4 220,55.9 220,48.6C220,41.3 215.6,36.8 209.9,36.8C204.2,36.8 199.8,41.3 199.8,48.6ZM190.4,48.6C190.5,37.9 198,29.5 209.9,29.5C221.8,29.5 229.3,37.9 229.4,48.6C229.3,59.3 221.8,67.7 209.9,67.7C198,67.7 190.5,59.3 190.4,48.6ZM241.6,66.9L250.5,66.9L250.5,52.5L262.1,52.5L262.1,45.5L250.5,45.5L250.5,37.3L264.5,37.3L266.1,30.3L241.6,30.3L241.6,66.9ZM307.6,30.3L298.6,30.3L284.9,66.9L294,66.9L296.5,59.3L309.7,59.3L312.2,66.9L321.4,66.9L307.6,30.3ZM303.1,39.1L307.4,52.6L298.6,52.6L303.1,39.1ZM374.2,30.3L363.8,30.3L354.3,50.1L344.8,30.3L334.4,30.3L334.4,66.9L342.4,66.9L342.4,42.4L354.2,66.9L366,42.4L366,66.9L374.3,66.9L374.2,30.3ZM391.5,66.9L416.5,66.9L416.5,59.9L400.4,59.9L400.4,51.7L413.1,51.7L413.1,44.9L400.4,44.9L400.4,37.3L415.1,37.3L416.7,30.3L391.5,30.3L391.5,66.9ZM450.4,66.9L460.1,66.9L451,51.4C456,50 458.4,46.5 458.4,41.4C458.4,34.8 454.4,30.4 445.4,30.4L431.3,30.4L431.3,67L440,67L440,52.6L442.4,52.6L450.4,66.9ZM443.7,37.1C447.4,37.1 449.3,38.7 449.3,41.8C449.3,44.9 447.4,46.5 443.7,46.5L439.9,46.5L439.9,37.1L443.7,37.1ZM473.4,66.9L482.3,66.9L482.3,30.4L473.4,30.4L473.4,66.9ZM526.1,57.1C522.7,59.5 519.7,60.3 516.6,60.3C509.8,60.3 505,55.6 505,48.6C505,41.6 509.7,36.9 516.3,36.9C519.3,36.9 522.3,37.7 525.6,40.1L525.6,31.8C522.6,30.1 519.1,29.4 515.2,29.4C503.1,29.4 495.5,37.8 495.4,48.5C495.5,59.3 502.9,67.6 515.2,67.6C519.3,67.6 522.8,66.9 526,65.2L526,57.1L526.1,57.1ZM558.7,30.3L549.7,30.3L536,66.9L545.1,66.9L547.6,59.3L560.8,59.3L563.3,66.9L572.5,66.9L558.7,30.3ZM554.2,39.1L558.5,52.6L549.7,52.6L554.2,39.1Z"
+                            style="fill-rule:nonzero;" />
+                    </g>
+                </g>
+            </g>
+            <g transform="matrix(1,0,0,1,4.777255,-52.05416)">
+                <text x="108.757px" y="155.455px"
+                    style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.4px;">Visit
+                    bankofamerica.com/ATM</text>
+            </g>
+        </svg>
+    </div>
+
+    <!-- 3. THE SCRIPT TO LINK THE FORM, SVG, AND IMAGE DOWNLOADER -->
+    <script>
+        // Formats a value for SVG display with a dollar sign and 2 decimals ($5.00)
+        function formatReceiptAmount(val) {
+            if (!val) return '$0.00';
+            const cleaned = String(val).replace(/[^0-9.]/g, '');
+            if (!cleaned) return '$0.00';
+            const num = parseFloat(cleaned);
+            if (isNaN(num)) return '$0.00';
+            return `$${num.toFixed(2)}`;
+        }
+
+        // Formats a date from YYYY-MM-DD to MM/DD/YY (e.g. 04/29/26 or 12/29/25)
+        function formatReceiptDate(val) {
+            if (!val) return '';
+            if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+                const parts = val.split('-');
+                const y = parts[0].slice(-2);
+                const m = parts[1];
+                const d = parts[2];
+                return `${m}/${d}/${y}`;
+            }
+            return val;
+        }
+
+        // Formats the input field itself into 2 decimal format (e.g. 5 -> 5.00, 13 -> 13.00)
+        function formatAmountInput() {
+            const input = document.getElementById('inputAmount');
+            if (!input) return;
+            const cleaned = input.value.replace(/[^0-9.]/g, '');
+            if (cleaned === '') return;
+            const num = parseFloat(cleaned);
+            if (!isNaN(num)) {
+                input.value = num.toFixed(2);
+            }
+            updateReceipt();
+        }
+
+        // Restricts Serial Number to digits and at most 4 characters while typing
+        function handleSerialInput() {
+            const input = document.getElementById('inputSerial');
+            if (!input) return;
+            input.value = input.value.replace(/\D/g, '').slice(0, 4);
+            updateReceipt();
+        }
+
+        // Guarantees Serial Number is strictly 4 digits (pads with zeros if less, randomizes if empty)
+        function formatSerialInput() {
+            const input = document.getElementById('inputSerial');
+            if (!input) return;
+            let val = input.value.replace(/\D/g, '').slice(0, 4);
+            if (val.length > 0 && val.length < 4) {
+                val = val.padStart(4, '0');
+            } else if (val.length === 0) {
+                val = String(Math.floor(1000 + Math.random() * 9000));
+            }
+            input.value = val;
+            updateReceipt();
+        }
+
+        // Update the SVG immediately when typing
+        function updateReceipt() {
+            const rawAmt = document.getElementById('inputAmount').value;
+            const amt = formatReceiptAmount(rawAmt);
+            const rawDate = document.getElementById('inputDate').value;
+            const date = formatReceiptDate(rawDate);
+            const time = document.getElementById('inputTime').value;
+            const serial = document.getElementById('inputSerial').value;
+
+            // Helper function to safely target text inside specific SVG groups
+            const updateText = (id, val) => {
+                const el = document.querySelector(`#${id} text`);
+                if (el) el.textContent = val;
+            };
+
+            // Updates the amount in all 3 places automatically
+            updateText('Amount', amt);
+            updateText('Amount1', amt);
+            updateText('Amount2', amt);
+
+            // Updates both Date locations automatically
+            updateText('Date', date);
+            updateText('Date1', date);
+
+            // Updates time and serial number
+            updateText('TimeMilitary', time);
+            updateText('SerialNumber', serial);
+
+            // Updates location fields
+            const streetEl = document.querySelector('#LocationStreet text');
+            const inputStreet = document.getElementById('inputStreet');
+            if (streetEl && inputStreet) {
+                const rawStreet = inputStreet.value.trim();
+                streetEl.textContent = rawStreet ? (rawStreet.startsWith('*') ? rawStreet.toUpperCase() : `*${rawStreet.toUpperCase()}`) : '';
+            }
+
+            const cityEl = document.getElementById('CityName');
+            const inputCity = document.getElementById('inputCity');
+            if (cityEl && inputCity) {
+                cityEl.textContent = inputCity.value.trim().toUpperCase();
+            }
+        }
+
+        // Converts the live SVG into a PNG and shares/downloads it (supports "Save to Photos" on mobile)
+        function downloadImage() {
+            // Ensure inputs are formatted before export
+            formatAmountInput();
+            formatSerialInput();
+
+            const svg = document.getElementById('receipt-svg');
+            const svgData = new XMLSerializer().serializeToString(svg);
+
+            // Create a virtual canvas to draw the image onto
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            // Set canvas size matching raw file
+            canvas.width = 454;
+            canvas.height = 766;
+
+            img.onload = function () {
+                // Add a white background to the image
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw the SVG over the background
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob(async (blob) => {
+                    if (!blob) return;
+
+                    // If mobile share sheet is supported (allows "Save Image" directly to Photos on iOS/Android)
+                    const file = new File([blob], 'Receipt.png', { type: 'image/png' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: 'Receipt'
+                            });
+                            return;
+                        } catch (err) {
+                            if (err.name === 'AbortError') return; // User closed sheet
+                        }
+                    }
+
+                    // Fallback for desktop or browsers without file sharing
+                    const url = URL.createObjectURL(blob);
+                    const downloadLink = document.createElement('a');
+                    downloadLink.download = 'Receipt.png';
+                    downloadLink.href = url;
+                    downloadLink.click();
+                    setTimeout(() => URL.revokeObjectURL(url), 1500);
+                }, 'image/png');
+            };
+
+            // Encode the SVG safely so the browser can read it as an image source
+            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        }
+
+        // Initialize dynamic values on page load / refresh
+        function initializeDefaults() {
+            const now = new Date();
+
+            // Military time (HH:mm)
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const timeInput = document.getElementById('inputTime');
+            if (timeInput) {
+                timeInput.value = `${hours}:${minutes}`;
+            }
+
+            // Random 4-digit serial number
+            const randomSerial = String(Math.floor(1000 + Math.random() * 9000));
+            const serialInput = document.getElementById('inputSerial');
+            if (serialInput) {
+                serialInput.value = randomSerial;
+            }
+
+            // Sync current date (YYYY-MM-DD for native date picker)
+            const yearFull = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const dateInput = document.getElementById('inputDate');
+            if (dateInput) {
+                dateInput.value = `${yearFull}-${month}-${day}`;
+            }
+
+            // Format default fields
+            formatAmountInput();
+            formatSerialInput();
+
+            // Render to SVG
+            updateReceipt();
+        }
+
+        // Pressing Enter in the Amount input will format and commit it
+        const amountEl = document.getElementById('inputAmount');
+        if (amountEl) {
+            amountEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    formatAmountInput();
+                    amountEl.blur();
+                }
+            });
+        }
+
+        // Pressing Enter in the Serial Number input will format and commit it
+        const serialEl = document.getElementById('inputSerial');
+        if (serialEl) {
+            serialEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    formatSerialInput();
+                    serialEl.blur();
+                }
+            });
+        }
+
+        // Run initialization immediately on load
+        window.addEventListener('DOMContentLoaded', initializeDefaults);
+        // Fallback in case DOM is already parsed
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+            initializeDefaults();
+        }
+    </script>
+</body>
+
+</html>
