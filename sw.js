@@ -1,4 +1,4 @@
-const CACHE_NAME = 's24-offline-cache-v2';
+const CACHE_NAME = 's24-offline-cache-v3';
 const ASSETS = [
   './',
   './boa',

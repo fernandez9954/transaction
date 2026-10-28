@@ -164,19 +164,29 @@
             transition: background-color 0.2s ease;
         }
 
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
         .save-btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             background-color: var(--btn-primary);
             color: white;
             border: none;
-            padding: 12px;
+            padding: 12px 8px;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             border-radius: 6px;
             cursor: pointer;
-            width: 100%;
             font-family: inherit;
-            margin-top: 4px;
-            transition: background-color 0.15s ease;
+            transition: background-color 0.15s ease, transform 0.1s ease;
+            white-space: nowrap;
         }
 
         .save-btn:hover {
@@ -185,6 +195,29 @@
 
         .save-btn:active {
             background-color: var(--btn-primary-active);
+            transform: scale(0.98);
+        }
+
+        .save-btn-secondary {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: 1.5px solid var(--input-border);
+        }
+
+        .save-btn-secondary:hover {
+            background-color: var(--accordion-content-bg);
+            border-color: var(--text-secondary);
+        }
+
+        .save-btn-secondary:active {
+            background-color: var(--input-bg);
+            transform: scale(0.98);
+        }
+
+        @media (max-width: 350px) {
+            .btn-group {
+                flex-direction: column;
+            }
         }
 
         .preview {
@@ -253,10 +286,23 @@
                     <label>City</label>
                     <input type="text" id="inputCity" value="COOPER CITY" oninput="updateReceipt()">
                 </div>
+                <div class="field">
+                    <label>Location ID</label>
+                    <input type="text" id="inputLocId" value="IFLD4732" oninput="updateReceipt()">
+                </div>
             </div>
         </details>
 
-        <button class="save-btn" onclick="downloadImage()">Save / Download Image</button>
+        <div class="btn-group">
+            <button type="button" class="save-btn" onclick="saveToPhotos()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                Save to Photos
+            </button>
+            <button type="button" class="save-btn save-btn-secondary" onclick="downloadImageFile()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download File
+            </button>
+        </div>
     </div>
 
     <!-- 2. YOUR RAW SVG -->
@@ -463,7 +509,7 @@
                     style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:16px;">Visit
                     bankofamerica.com/CardlessATM</text>
             </g>
-            <g transform="matrix(1,0,0,1,200.474614,-18.382988)">
+            <g id="LocationId" transform="matrix(1,0,0,1,200.474614,-18.382988)">
                 <text x="42px" y="155.742px"
                     style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:17.8px;">IFLD4732</text>
             </g>
@@ -620,63 +666,103 @@
             if (cityEl && inputCity) {
                 cityEl.textContent = inputCity.value.trim().toUpperCase();
             }
+
+            const locIdEl = document.querySelector('#LocationId text');
+            const inputLocId = document.getElementById('inputLocId');
+            if (locIdEl && inputLocId) {
+                locIdEl.textContent = inputLocId.value.trim().toUpperCase();
+            }
         }
 
-        // Converts the live SVG into a PNG and shares/downloads it (supports "Save to Photos" on mobile)
-        function downloadImage() {
-            // Ensure amount and time are formatted if entered
+        // Generates dynamic filename based on Date and Amount (e.g. Receipt_2026-10-27_$150.00.png)
+        function getReceiptFilename() {
+            const rawDate = document.getElementById('inputDate')?.value?.trim() || '';
+            const rawAmt = document.getElementById('inputAmount')?.value?.trim() || '';
+
+            const datePart = rawDate || new Date().toISOString().slice(0, 10);
+            const cleanAmt = rawAmt.replace(/[^0-9.]/g, '');
+            let amtPart = '';
+            if (cleanAmt && !isNaN(parseFloat(cleanAmt))) {
+                amtPart = `_$${parseFloat(cleanAmt).toFixed(2)}`;
+            }
+
+            return `Receipt_${datePart}${amtPart}.png`;
+        }
+
+        // Helper to render current SVG into PNG canvas blob
+        function renderReceiptBlob(callback) {
             formatAmountInput();
             formatTimeInput();
 
             const svg = document.getElementById('receipt-svg');
             const svgData = new XMLSerializer().serializeToString(svg);
 
-            // Create a virtual canvas to draw the image onto
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             const img = new Image();
 
-            // Set canvas size matching raw file
             canvas.width = 454;
             canvas.height = 766;
 
             img.onload = function () {
-                // Add a white background to the image
                 ctx.fillStyle = "white";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                // Draw the SVG over the background
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                canvas.toBlob(async (blob) => {
-                    if (!blob) return;
-
-                    // If mobile share sheet is supported (allows "Save Image" directly to Photos on iOS/Android)
-                    const file = new File([blob], 'Receipt.png', { type: 'image/png' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share({
-                                files: [file],
-                                title: 'Receipt'
-                            });
-                            return;
-                        } catch (err) {
-                            if (err.name === 'AbortError') return; // User closed sheet
-                        }
-                    }
-
-                    // Fallback for desktop or browsers without file sharing
-                    const url = URL.createObjectURL(blob);
-                    const downloadLink = document.createElement('a');
-                    downloadLink.download = 'Receipt.png';
-                    downloadLink.href = url;
-                    downloadLink.click();
-                    setTimeout(() => URL.revokeObjectURL(url), 1500);
+                canvas.toBlob((blob) => {
+                    if (blob) callback(blob);
                 }, 'image/png');
             };
 
-            // Encode the SVG safely so the browser can read it as an image source
             img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        }
+
+        // Direct browser file download helper
+        function triggerFileDownload(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const downloadLink = document.createElement('a');
+            downloadLink.download = filename;
+            downloadLink.href = url;
+            downloadLink.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+        }
+
+        // Save to Photos (invokes mobile Share Sheet with "Save Image" capability)
+        function saveToPhotos() {
+            renderReceiptBlob(async (blob) => {
+                const filename = getReceiptFilename();
+                const file = new File([blob], filename, { type: 'image/png' });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: filename
+                        });
+                        return;
+                    } catch (err) {
+                        if (err.name === 'AbortError') return; // User cancelled
+                        console.error('Share sheet error, falling back to download:', err);
+                        triggerFileDownload(blob, filename);
+                    }
+                } else {
+                    // Fallback for browsers/desktops without file sharing support
+                    triggerFileDownload(blob, filename);
+                }
+            });
+        }
+
+        // Direct File Download
+        function downloadImageFile() {
+            renderReceiptBlob((blob) => {
+                const filename = getReceiptFilename();
+                triggerFileDownload(blob, filename);
+            });
+        }
+
+        // Backwards compatibility alias
+        function downloadImage() {
+            saveToPhotos();
         }
 
         // Initialize dynamic values on page load / refresh

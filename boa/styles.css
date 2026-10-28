@@ -1,0 +1,337 @@
+/* ==========================================================================
+   THEME VARIABLES (Light & Dark Mode)
+   ========================================================================== */
+:root {
+  --bg-body: #f4f4f5;
+  --bg-sidebar: #ffffff;
+  --bg-card: #f8fafc;
+  --bg-input: #ffffff;
+  --bg-badge: #e4e4e7;
+  --border-color: #e4e4e7;
+  --border-input: #d4d4d8;
+  --text-main: #18181b;
+  --text-muted: #71717a;
+}
+
+html.dark {
+  --bg-body: #18181b;
+  --bg-sidebar: #09090b;
+  --bg-card: rgba(24, 24, 27, 0.7);
+  --bg-input: #18181b;
+  --bg-badge: #27272a;
+  --border-color: #27272a;
+  --border-input: #3f3f46;
+  --text-main: #f4f4f5;
+  --text-muted: #a1a1aa;
+}
+
+.app-body {
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.app-sidebar {
+  background-color: var(--bg-sidebar);
+  border-color: var(--border-color);
+}
+
+.app-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.app-title {
+  color: var(--text-main);
+}
+
+.app-muted {
+  color: var(--text-muted);
+}
+
+.app-badge,
+.app-btn-secondary {
+  background-color: var(--bg-badge);
+  color: var(--text-main);
+}
+
+.theme-switcher {
+  background-color: var(--bg-sidebar);
+  border-color: var(--border-color);
+}
+
+.theme-btn {
+  color: var(--text-muted);
+}
+
+.theme-btn-active {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.form-input {
+  width: 100%;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.form-input:focus {
+  border-color: #3b82f6;
+}
+
+/* ==========================================================================
+   1:1 PRECISION RECEIPT CANVAS (Locked 408px Width)
+   Coordinates calibrated directly from Receipt_2026-10-26_$25.00.png
+   ========================================================================== */
+.receipt-root {
+  width: 408px;
+  background-color: #FFFFFF;
+  color: #000000;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: 16.25px;
+  line-height: 16.2px;
+  letter-spacing: -0.05px;
+  padding-top: 16.18px;
+  padding-bottom: 22.47px;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Invert preview in Dark mode, but always export normal white PNG */
+html.dark .receipt-root:not(.receipt-exporting) {
+  filter: invert(1);
+}
+
+/* Editable static text hover/focus feedback */
+.receipt-root [contenteditable="true"] {
+  outline: none;
+  border-radius: 2px;
+}
+
+.receipt-root [contenteditable="true"]:hover {
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.35);
+}
+
+.receipt-root [contenteditable="true"]:focus {
+  box-shadow: 0 0 0 1.5px rgba(37, 99, 235, 0.75);
+  background-color: rgba(59, 130, 246, 0.06);
+}
+
+.receipt-exporting [contenteditable="true"] {
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+/* 1. Top Logo */
+.receipt-logo-top {
+  margin-left: 55.72px;
+  height: 29.66px;
+}
+
+/* 2. Subheader */
+.receipt-subheader {
+  margin-top: 17.65px;
+  text-align: center;
+  padding-left: 14px;
+  font-size: 16.25px;
+  line-height: 16.18px;
+}
+
+/* 3. Date / Time / ATM ID Row */
+.receipt-datetime-row {
+  margin-top: 27.6px;
+  padding-left: 42.24px;
+  display: flex;
+  align-items: baseline;
+  font-size: 16.25px;
+  line-height: 16.18px;
+}
+
+.receipt-date {
+  display: inline-block;
+  width: 89.87px;
+}
+
+.receipt-time {
+  display: inline-block;
+  width: 86.27px;
+}
+
+.receipt-atmid {
+  display: inline-block;
+}
+
+/* 4. Location Block */
+.receipt-location-block {
+  margin-top: 18.5px;
+  padding-left: 42.24px;
+  font-size: 16.25px;
+  line-height: 17.07px;
+}
+
+.receipt-city-row {
+  display: flex;
+  align-items: baseline;
+}
+
+.receipt-state {
+  margin-left: 20.67px;
+}
+
+/* 5. Dashed Divider */
+.receipt-divider {
+  margin-top: 4.5px;
+  padding-left: 42.24px;
+  font-size: 16.2px;
+  line-height: 14px;
+  letter-spacing: -0.02px;
+  white-space: nowrap;
+}
+
+/* 6. Summary Block */
+.receipt-summary-block {
+  margin-top: 4.1px;
+  padding-left: 42.24px;
+  font-size: 16.25px;
+}
+
+.receipt-row-summary-title {
+  line-height: 15.2px;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.receipt-row-card {
+  padding-right: 36.85px;
+  line-height: 15.5px;
+}
+
+.receipt-row-deposit-to {
+  margin-top: 1.7px;
+  padding-right: 39.54px;
+  line-height: 15.2px;
+}
+
+.receipt-row-acct2 {
+  padding-right: 39.54px;
+  line-height: 14.8px;
+}
+
+.receipt-row-total {
+  margin-top: 3.6px;
+  padding-right: 41.34px;
+  line-height: 15.0px;
+}
+
+.receipt-row-posts {
+  padding-right: 41.34px;
+  line-height: 14.8px;
+}
+
+.receipt-row-available {
+  padding-right: 41.34px;
+  line-height: 15.0px;
+}
+
+.receipt-row-cash {
+  margin-top: 11.9px;
+  padding-right: 41.34px;
+  line-height: 15.5px;
+}
+
+/* Dynamic Bill Breakdown Rows (Centered/Indented below Ser. No. matching photo) */
+.receipt-bill-rows {
+  margin-top: 10px;
+  padding-left: 58px;
+  padding-right: 121px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.receipt-bill-rows:empty {
+  margin-top: 0;
+}
+
+.receipt-bill-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  line-height: 16.18px;
+}
+
+.receipt-bill-left {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.receipt-bill-qty {
+  display: inline-block;
+  min-width: 14px;
+  text-align: right;
+}
+
+.receipt-bill-x {
+  display: inline-block;
+  margin-left: 17px;
+  margin-right: 13px;
+}
+
+.receipt-row-serial {
+  margin-top: 0.7px;
+  line-height: 16.0px;
+}
+
+/* 7. Legal Disclosure */
+.receipt-disclosure {
+  margin-top: 14px;
+  padding-left: 42.24px;
+  font-size: 16.25px;
+  line-height: 16.98px;
+}
+
+/* 8. Member FDIC */
+.receipt-fdic {
+  margin-top: 8.2px;
+  padding-left: 42.24px;
+  font-size: 16.25px;
+  line-height: 16.0px;
+}
+
+/* 9. ATM Phone SVG Graphic */
+.receipt-atm-phone {
+  margin-top: -6.1px;
+  margin-left: 190.52px;
+  height: 56.62px;
+}
+
+/* 10. Footer */
+.receipt-footer {
+  margin-top: 5.2px;
+  text-align: center;
+  padding-left: 24px;
+}
+
+.receipt-footer-line1 {
+  font-size: 15.1px;
+  line-height: 16.5px;
+  letter-spacing: -0.1px;
+}
+
+.receipt-footer-line2 {
+  font-size: 15.1px;
+  line-height: 16.8px;
+  letter-spacing: -0.1px;
+  padding-right: 7px;
+}
