@@ -1,8 +1,7 @@
-const CACHE_NAME = 's24-offline-cache-v3';
+const CACHE_NAME = 's24-offline-cache-v4';
 const ASSETS = [
   './',
-  './boa',
-  './boa.html',
+  './boa/',
   './manifest.json',
   './css/styles.css',
   './js/theme.js',

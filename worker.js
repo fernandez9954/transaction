@@ -136,9 +136,11 @@ export default {
       });
     }
 
-    // 3. Normalize trailing slash for /boa/
-    if (url.pathname === '/boa/') {
-      return Response.redirect(new URL('/boa', request.url), 301);
+    // 3. Normalize /boa and /boa/index.html to /boa/
+    if (url.pathname === '/boa' || url.pathname === '/boa/index.html') {
+      const target = new URL('/boa/', request.url);
+      target.search = url.search;
+      return Response.redirect(target, 302);
     }
 
     // 4. Public assets needed to render pin.html, favicon, and PWA manifest/icons/service-worker
@@ -182,12 +184,12 @@ export default {
       });
     }
 
-    // 6. Authenticated: handle route aliases like / -> /index.html and /boa -> /boa.html
+    // 6. Authenticated: handle route aliases like / -> /index.html and /boa/ -> /boa/index.html
     let assetRequest = request;
     if (url.pathname === '/' || url.pathname === '') {
       assetRequest = new Request(new URL('/index.html', request.url), request);
-    } else if (url.pathname === '/boa') {
-      assetRequest = new Request(new URL('/boa.html', request.url), request);
+    } else if (url.pathname === '/boa/') {
+      assetRequest = new Request(new URL('/boa/index.html', request.url), request);
     }
 
     // Fetch the real static asset from Cloudflare CDN
