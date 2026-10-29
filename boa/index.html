@@ -23,7 +23,6 @@
     <form id="receiptForm" class="space-y-8" onsubmit="return false;">
       <!-- 1. Header Row -->
       <section class="space-y-3">
-        <h2 class="text-base font-semibold uppercase text-blue-800 dark:text-blue-400">1. FIELDS</h2>
         <div class="grid grid-cols-3 gap-2.5">
           <div>
             <label class="block text-xs mb-1">Date</label>
@@ -44,9 +43,11 @@
       </section>
 
       <!-- 2. Dynamic Bill Breakdown Rows -->
+      <div id="billRowsContainer" class="space-y-2"></div>
+
       <section class="space-y-4">
         <div class="flex items-center justify-between">
-          <h2 class="text-base font-semibold uppercase text-blue-800 dark:text-blue-400">2. Bills</h2>
+
           <button id="addBillRowBtn" type="button"
             class="text-sm px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-medium transition cursor-pointer">
             Add Bill Row
@@ -54,18 +55,16 @@
         </div>
       </section>
 
-      <div id="billRowsContainer" class="space-y-2"></div>
-
-      <div class="pt-8 border-t border-[var(--border-color)] flex items-baseline justify-between">
+      <div class="pt-8 flex items-baseline justify-between">
         <span class="text-base font-semibold uppercase text-blue-800 dark:text-blue-400">Total</span>
         <span id="displayTotal" class="text-3xl font-bold"></span>
       </div>
 
       <!-- 3. Location -->
-      <details class="app-card rounded-xl p-4 group">
+      <details class="">
         <summary
           class="text-xs font-semibold uppercase text-blue-800 dark:text-blue-400 cursor-pointer select-none list-none flex items-center justify-between">
-          <span>3. Location</span>
+          <span>Settings</span>
           <span class="text-xs transition-transform group-open:rotate-180">▼</span>
         </summary>
         <div class="space-y-3 mt-3">
@@ -90,17 +89,6 @@
               <input id="inState" type="text" value="FL" class="form-input text-base" />
             </div>
           </div>
-        </div>
-      </details>
-
-      <!-- 4. Deposit Summary -->
-      <details class="app-card rounded-xl p-4 group">
-        <summary
-          class="text-xs font-semibold uppercase text-blue-800 dark:text-blue-400 cursor-pointer select-none list-none flex items-center justify-between">
-          <span>4. Deposit Summary</span>
-          <span class="text-xs transition-transform group-open:rotate-180">▼</span>
-        </summary>
-        <div class="space-y-3 mt-3">
           <div class="grid grid-cols-2 gap-2.5">
             <div>
               <label class="block text-xs mb-1">Card Last 4</label>
@@ -123,16 +111,6 @@
             </div>
           </div>
 
-        </div>
-      </details>
-      <!-- 5. Settings -->
-      <details class="app-card rounded-xl p-4 group">
-        <summary
-          class="text-xs font-semibold uppercase text-blue-800 dark:text-blue-400 cursor-pointer select-none list-none flex items-center justify-between">
-          <span>5. Settings</span>
-          <span class="text-xs transition-transform group-open:rotate-180">▼</span>
-        </summary>
-        <div class="space-y-4 mt-3">
           <!-- Theme -->
           <div>
             <label class="block text-xs mb-1.5">Theme</label>
@@ -158,7 +136,6 @@
           </div>
         </div>
       </details>
-
     </form>
   </aside>
 

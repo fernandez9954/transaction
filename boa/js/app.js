@@ -72,10 +72,6 @@ function renderBillRowInputs() {
           ${billButtonsHtml}
         </div>
       </div>
-
-      <button type="button" data-remove="${idx}" class="mt-5 px-4 py-2 text-xl rounded-xl hover:bg-red-500/25 text-red-500 border-0 transition cursor-pointer" title="Remove row">
-        ✕
-      </button>
     `;
 
     // Bind quantity input
@@ -95,13 +91,6 @@ function renderBillRowInputs() {
         renderBillRowInputs();
         updateReceipt();
       });
-    });
-
-    // Bind remove button
-    wrapper.querySelector('button[data-remove]').addEventListener('click', () => {
-      billRows.splice(idx, 1);
-      renderBillRowInputs();
-      updateReceipt();
     });
 
     els.billRowsContainer.appendChild(wrapper);
