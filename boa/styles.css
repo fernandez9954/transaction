@@ -38,7 +38,6 @@ html.dark {
 
 .app-card {
   background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
 }
 
 .app-title {
@@ -182,7 +181,7 @@ html.dark .receipt-root:not(.receipt-exporting) {
 }
 
 .receipt-state {
-  margin-left: 20.67px;
+  margin-left: 3rem;
 }
 
 /* 5. Dashed Divider */
@@ -252,7 +251,7 @@ html.dark .receipt-root:not(.receipt-exporting) {
 
 /* Dynamic Bill Breakdown Rows (Centered/Indented below Ser. No. matching photo) */
 .receipt-bill-rows {
-  margin-top: 10px;
+  margin-top: 14px;
   padding-left: 58px;
   padding-right: 121px;
   display: flex;
@@ -297,22 +296,23 @@ html.dark .receipt-root:not(.receipt-exporting) {
 .receipt-disclosure {
   margin-top: 14px;
   padding-left: 42.24px;
-  font-size: 16.25px;
+  font-size: 14px;
   line-height: 16.98px;
 }
 
 /* 8. Member FDIC */
 .receipt-fdic {
-  margin-top: 8.2px;
+  margin-top: 12px;
   padding-left: 42.24px;
-  font-size: 16.25px;
+  font-size: 14px;
   line-height: 16.0px;
 }
 
 /* 9. ATM Phone SVG Graphic */
 .receipt-atm-phone {
-  margin-top: -6.1px;
-  margin-left: 190.52px;
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
   height: 56.62px;
 }
 
@@ -324,13 +324,13 @@ html.dark .receipt-root:not(.receipt-exporting) {
 }
 
 .receipt-footer-line1 {
-  font-size: 15.1px;
+  font-size: 14px;
   line-height: 16.5px;
   letter-spacing: -0.1px;
 }
 
 .receipt-footer-line2 {
-  font-size: 15.1px;
+  font-size: 14px;
   line-height: 16.8px;
   letter-spacing: -0.1px;
   padding-right: 7px;

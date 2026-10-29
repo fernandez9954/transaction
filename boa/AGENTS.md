@@ -6,3 +6,4 @@
 6. do not be opinionated. this is my app not yours.
 7. this isnt mission impossible, do it as quickly as possible.
 8. keep steps minimal, direct, and fast
+9. no text-xs, ask me and where you are going to use it, i prefer text-base
