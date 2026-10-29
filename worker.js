@@ -6,6 +6,9 @@
 
 const COOKIE_NAME = 's24_auth';
 const ONE_YEAR_SECONDS = 31536000; // 365 days
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes
+const failedAttempts = new Map();
 
 /**
  * Computes a secure SHA-256 hash of the PIN + salt
@@ -17,6 +20,18 @@ async function getExpectedToken(pin) {
   return Array.from(new Uint8Array(hashBuffer))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
+}
+
+/**
+ * Compares two strings in constant time using SHA-256 + timingSafeEqual
+ */
+async function timingSafeMatch(a, b) {
+  const encoder = new TextEncoder();
+  const [hashA, hashB] = await Promise.all([
+    crypto.subtle.digest('SHA-256', encoder.encode(a)),
+    crypto.subtle.digest('SHA-256', encoder.encode(b))
+  ]);
+  return crypto.subtle.timingSafeEqual(hashA, hashB);
 }
 
 /**
@@ -44,17 +59,36 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // Read PIN from Wrangler secret / environment variable (fallback to '1234' if unset)
-    const configuredPin = (env.APP_PIN || '1234').trim();
-    const expectedToken = await getExpectedToken(configuredPin);
+    // Read PIN from Wrangler secret / environment variable (fail closed if unset)
+    const configuredPin = (env.APP_PIN || '').trim();
+    const expectedToken = configuredPin ? await getExpectedToken(configuredPin) : null;
 
     // 1. PIN verification endpoint
     if (url.pathname === '/api/auth' && request.method === 'POST') {
+      const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
+      const now = Date.now();
+      const record = failedAttempts.get(clientIp);
+
+      if (record) {
+        if (now >= record.resetAt) {
+          failedAttempts.delete(clientIp);
+        } else if (record.count >= MAX_ATTEMPTS) {
+          return new Response(JSON.stringify({ error: 'Too many attempts. Try again in 15m' }), {
+            status: 429,
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store'
+            }
+          });
+        }
+      }
+
       try {
         const body = await request.json();
         const submittedPin = (body.pin || '').trim();
 
-        if (submittedPin === configuredPin) {
+        if (configuredPin && await timingSafeMatch(submittedPin, configuredPin)) {
+          failedAttempts.delete(clientIp);
           return new Response(JSON.stringify({ success: true }), {
             status: 200,
             headers: {
@@ -64,6 +98,13 @@ export default {
             }
           });
         } else {
+          const current = failedAttempts.get(clientIp);
+          if (!current || now >= current.resetAt) {
+            failedAttempts.set(clientIp, { count: 1, resetAt: now + LOCKOUT_MS });
+          } else {
+            current.count += 1;
+          }
+
           return new Response(JSON.stringify({ error: 'Incorrect passcode' }), {
             status: 401,
             headers: {
@@ -114,7 +155,9 @@ export default {
 
     // 5. Check for valid authentication cookie
     const clientToken = getCookie(request, COOKIE_NAME);
-    const isAuthenticated = clientToken === expectedToken;
+    const isAuthenticated = Boolean(
+      expectedToken && clientToken && (await timingSafeMatch(clientToken, expectedToken))
+    );
 
     if (!isAuthenticated) {
       // Unauthenticated: intercept and serve pin.html directly at current URL with no-cache headers

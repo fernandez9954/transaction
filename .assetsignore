@@ -1,0 +1,9 @@
+worker.js
+wrangler.jsonc
+AGENTS.md
+.git
+.gitignore
+.wrangler
+.DS_Store
+.assetsignore
+

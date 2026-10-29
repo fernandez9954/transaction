@@ -406,7 +406,8 @@
                         }
                     }, 350);
                 } else {
-                    handlePinError('Incorrect passcode');
+                    const data = await response.json().catch(() => ({}));
+                    handlePinError(data.error || 'Incorrect passcode');
                 }
             } catch (err) {
                 // Fallback for standalone/local testing demo: accepts '1234'

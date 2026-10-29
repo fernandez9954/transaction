@@ -1,4 +1,4 @@
-// Standalone Theme Manager (System | Light | Dark)
+// Standalone Theme & Receipt Edit Mode Manager
 (function () {
   const STORAGE_KEY = 'boa_theme_mode';
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -29,4 +29,25 @@
   });
 
   applyTheme(currentMode);
+
+  // Direct Receipt Copy Editing Switcher (Locked / Editable)
+  const editModeBtns = document.querySelectorAll('[data-edit-mode]');
+  const editableNodes = document.querySelectorAll('[data-editable]');
+
+  function setReceiptEditMode(mode) {
+    const isEditable = mode === 'editable';
+    editableNodes.forEach((node) => {
+      node.setAttribute('contenteditable', isEditable ? 'true' : 'false');
+    });
+
+    editModeBtns.forEach((btn) => {
+      const active = btn.dataset.editMode === mode;
+      btn.classList.toggle('theme-btn-active', active);
+      btn.classList.toggle('text-[var(--text-muted)]', !active);
+    });
+  }
+
+  editModeBtns.forEach((btn) => {
+    btn.addEventListener('click', () => setReceiptEditMode(btn.dataset.editMode));
+  });
 })();

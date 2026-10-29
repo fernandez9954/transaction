@@ -1,21 +1,7 @@
-function getTodayYMD() {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, '0');
-  const d = String(now.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
+// Receipt Form State, Bill Breakdown & Live Canvas Sync
 
-function formatDateForReceipt(ymdString) {
-  if (!ymdString) return '';
-  const parts = ymdString.split('-');
-  if (parts.length !== 3) return ymdString;
-  const [year, month, day] = parts;
-  const shortYear = year.slice(-2);
-  return `${month}/${day}/${shortYear}`;
-}
-
-
+const VALID_DENOMINATIONS = [1, 5, 10, 20, 50, 100];
+const BILL_OPTIONS = ['1', '5', '10', '20', '50'];
 
 let billRows = [
   { qty: '', denom: '' }
@@ -38,6 +24,7 @@ const els = {
   billRowsContainer: document.getElementById('billRowsContainer'),
   addBillRowBtn: document.getElementById('addBillRowBtn'),
   downloadPngBtn: document.getElementById('downloadPngBtn'),
+  savePhotosBtn: document.getElementById('savePhotosBtn'),
   receiptCanvas: document.getElementById('receiptCanvas'),
 
   // Receipt Output Nodes
@@ -57,15 +44,6 @@ const els = {
   outBillRows: document.getElementById('outBillRows'),
   outSerial: document.getElementById('outSerial')
 };
-
-function formatCurrency(val) {
-  const num = parseFloat(String(val).replace(/[^0-9.-]/g, ''));
-  if (isNaN(num)) return '$0.00';
-  return '$' + num.toFixed(2);
-}
-
-const VALID_DENOMINATIONS = [1, 5, 10, 20, 50, 100];
-const BILL_OPTIONS = ['1', '5', '10', '20', '50'];
 
 function renderBillRowInputs() {
   els.billRowsContainer.innerHTML = '';
@@ -180,81 +158,14 @@ function updateReceipt() {
   els.outCashAmount.textContent = formattedTotal;
 }
 
-// Time Input: Numbers only, 4 digits max, auto-colon after 2 digits, numeric keypad on mobile
-let isTimeDeleting = false;
-
-els.inTime.addEventListener('keydown', (e) => {
-  if (['Backspace', 'Delete'].includes(e.key)) {
-    isTimeDeleting = true;
-    return;
-  }
-  isTimeDeleting = false;
-
-  // Allow navigation and shortcut keys (Tab, Esc, Enter, Arrows, Cmd/Ctrl+A/C/V/X, etc.)
-  if (
-    ['Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key) ||
-    e.ctrlKey || e.metaKey
-  ) {
-    return;
-  }
-
-  // Block any non-digit character on desktop
-  if (!/^\d$/.test(e.key)) {
-    e.preventDefault();
-  }
-});
-
-els.inTime.addEventListener('input', (e) => {
-  const isDelete = isTimeDeleting || e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward';
-  const rawValue = els.inTime.value;
-  let digits = rawValue.replace(/\D/g, '').slice(0, 4);
-
-  if (digits.length === 0) {
-    els.inTime.value = '';
-  } else if (digits.length === 1) {
-    els.inTime.value = digits;
-  } else if (digits.length === 2) {
-    if (isDelete && !rawValue.includes(':')) {
-      els.inTime.value = digits.slice(0, 1);
-    } else {
-      let hours = parseInt(digits, 10);
-      if (hours > 23) hours = 23;
-      const hh = String(hours).padStart(2, '0');
-      els.inTime.value = hh + ':';
-    }
-  } else {
-    let hours = parseInt(digits.slice(0, 2), 10);
-    if (hours > 23) hours = 23;
-    const hh = String(hours).padStart(2, '0');
-
-    let mm = digits.slice(2);
-    if (mm.length === 2) {
-      let mins = parseInt(mm, 10);
-      if (mins > 59) mins = 59;
-      mm = String(mins).padStart(2, '0');
-    }
-    els.inTime.value = `${hh}:${mm}`;
-  }
-
-  isTimeDeleting = false;
-  updateReceipt();
-});
+// Wire Input Masks
+bindTimeInputMask(els.inTime, updateReceipt);
+bindAtmIdInputMask(els.inAtmId, updateReceipt);
+bindSerialInputMask(els.inSerial, updateReceipt);
 
 // Event Listeners for standard inputs
 els.inDate.addEventListener('input', () => {
   els.inPostsOn.value = els.inDate.value;
-  updateReceipt();
-});
-
-// ATM ID Input: Alphanumeric only, uppercase, max 8 characters
-els.inAtmId.addEventListener('input', () => {
-  els.inAtmId.value = els.inAtmId.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
-  updateReceipt();
-});
-
-// Serial Number Input: Digits only, max 4 characters
-els.inSerial.addEventListener('input', () => {
-  els.inSerial.value = els.inSerial.value.replace(/\D/g, '').slice(0, 4);
   updateReceipt();
 });
 
@@ -277,85 +188,8 @@ els.addBillRowBtn.addEventListener('click', () => {
   updateReceipt();
 });
 
-// Download PNG Button
-els.downloadPngBtn.addEventListener('click', async () => {
-  // Validate required fields before download
-  const missing = [];
-
-  const timeVal = els.inTime.value.trim();
-  if (!timeVal || timeVal.length < 5) {
-    missing.push('• Time (full 4 digits)');
-  }
-
-  const serialVal = els.inSerial.value.trim();
-  if (!serialVal || serialVal.length < 4) {
-    missing.push('• Serial Number (4 digits)');
-  }
-
-  const hasCompleteBillRow = billRows.some((row) => {
-    const qty = parseInt(String(row.qty).replace(/\D/g, ''), 10) || 0;
-    const denom = String(row.denom).trim();
-    return qty > 0 && denom !== '';
-  });
-
-  if (!hasCompleteBillRow) {
-    missing.push('• At least 1 bill row (Qty and Bill)');
-  }
-
-  if (missing.length > 0) {
-    alert(`Please complete the following before downloading:\n\n${missing.join('\n')}`);
-    return;
-  }
-
-  const originalText = els.downloadPngBtn.textContent;
-  const wasDark = document.documentElement.classList.contains('dark');
-  try {
-    els.downloadPngBtn.textContent = 'Exporting...';
-    els.receiptCanvas.classList.add('receipt-exporting');
-    if (wasDark) document.documentElement.classList.remove('dark');
-
-    const dataUrl = await window.htmlToImage.toPng(els.receiptCanvas, {
-      pixelRatio: 1,
-      backgroundColor: '#FFFFFF',
-      cacheBust: true,
-      style: { filter: 'none' }
-    });
-
-    const link = document.createElement('a');
-    const amountStr = els.outTotalDeposit.textContent || '$25.00';
-    const rawDate = els.inDate.value.trim().replace(/\//g, '-');
-    link.download = `Receipt_${rawDate}_${amountStr}.png`;
-    link.href = dataUrl;
-    link.click();
-  } catch (err) {
-    console.error('PNG Export failed:', err);
-  } finally {
-    if (wasDark) document.documentElement.classList.add('dark');
-    els.receiptCanvas.classList.remove('receipt-exporting');
-    els.downloadPngBtn.textContent = originalText;
-  }
-});
-
-// Direct Receipt Copy Editing Switcher (Locked / Editable)
-const editModeBtns = document.querySelectorAll('[data-edit-mode]');
-const editableNodes = document.querySelectorAll('[data-editable]');
-
-function setReceiptEditMode(mode) {
-  const isEditable = mode === 'editable';
-  editableNodes.forEach((node) => {
-    node.setAttribute('contenteditable', isEditable ? 'true' : 'false');
-  });
-
-  editModeBtns.forEach((btn) => {
-    const active = btn.dataset.editMode === mode;
-    btn.classList.toggle('theme-btn-active', active);
-    btn.classList.toggle('text-[var(--text-muted)]', !active);
-  });
-}
-
-editModeBtns.forEach((btn) => {
-  btn.addEventListener('click', () => setReceiptEditMode(btn.dataset.editMode));
-});
+// Wire Export Buttons (Download PNG & Save to Photos)
+bindReceiptExportActions(els, () => billRows);
 
 // Initialize
 els.inDate.value = getTodayYMD();
